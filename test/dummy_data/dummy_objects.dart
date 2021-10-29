@@ -1,7 +1,11 @@
 import 'package:ditonton/data/models/movie_table.dart';
+import 'package:ditonton/domain/entities/episode_to_air.dart';
 import 'package:ditonton/domain/entities/genre.dart';
 import 'package:ditonton/domain/entities/movie.dart';
 import 'package:ditonton/domain/entities/movie_detail.dart';
+import 'package:ditonton/domain/entities/season.dart';
+import 'package:ditonton/domain/entities/tv_series.dart';
+import 'package:ditonton/domain/entities/tv_series_detail.dart';
 
 final testMovie = Movie(
   adult: false,
@@ -20,7 +24,24 @@ final testMovie = Movie(
   voteCount: 13507,
 );
 
+final testTvSeries = TvSeries(
+  backdropPath: "",
+  firstAirDate: "",
+  genreIds: [1, 2],
+  id: 2,
+  name: "title",
+  originCountry: [""],
+  originalLanguage: "en",
+  originalName: "",
+  overview: "",
+  popularity: 5.0,
+  posterPath: "",
+  voteAverage: 1,
+  voteCount: 2,
+);
+
 final testMovieList = [testMovie];
+final testTvSeriesList = [testTvSeries];
 
 final testMovieDetail = MovieDetail(
   adult: false,
@@ -35,6 +56,24 @@ final testMovieDetail = MovieDetail(
   title: 'title',
   voteAverage: 1,
   voteCount: 1,
+);
+
+final testTvSeriesDetail = TvSeriesDetail(
+  backdropPath: "",
+  genres: [Genre(id: 1, name: '')],
+  id: 1,
+  originalTitle: "a",
+  overview: "",
+  posterPath: "",
+  firstAirDate: DateTime.now(),
+  lastAirDate: DateTime.now(),
+  tagline: "",
+  lastEpisodeToAir: EpisodeToAir(),
+  nextEpisodeToAir: EpisodeToAir(),
+  seasons: [Season()],
+  name: "",
+  voteAverage: 2,
+  voteCount: 2,
 );
 
 final testWatchlistMovie = Movie.watchlist(

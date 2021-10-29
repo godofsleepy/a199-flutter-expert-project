@@ -4,6 +4,7 @@ import 'package:ditonton/domain/usecases/save_watchlist_tvseries.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 
+import '../../dummy_data/dummy_objects.dart';
 import '../../helpers/test_helper.mocks.dart';
 
 void main() {
@@ -22,10 +23,10 @@ void main() {
         'should get empty String from the repository when execute function is called',
         () async {
       // arrange
-      when(repository.saveWatchlist(TvSeries()))
+      when(repository.saveWatchlist(testTvSeriesDetail))
           .thenAnswer((_) async => Right(data));
       // act
-      final result = await usecase.execute(TvSeries());
+      final result = await usecase.execute(testTvSeriesDetail);
       // assert
       expect(result, Right(data));
     });
