@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 
+import 'package:ditonton/domain/entities/episode_to_air.dart';
 import 'package:ditonton/domain/entities/genre.dart';
 import 'package:ditonton/domain/entities/season.dart';
 
@@ -14,6 +15,8 @@ class TvSeriesDetail extends Equatable {
     required this.firstAirDate,
     required this.lastAirDate,
     required this.tagline,
+    required this.lastEpisodeToAir,
+    required this.nextEpisodeToAir,
     required this.seasons,
     required this.name,
     required this.voteAverage,
@@ -29,6 +32,8 @@ class TvSeriesDetail extends Equatable {
   final DateTime firstAirDate;
   final DateTime lastAirDate;
   final String tagline;
+  final EpisodeToAir lastEpisodeToAir;
+  final EpisodeToAir nextEpisodeToAir;
   final List<Season> seasons;
   final String name;
   final double voteAverage;
@@ -46,6 +51,8 @@ class TvSeriesDetail extends Equatable {
       firstAirDate,
       lastAirDate,
       tagline,
+      lastEpisodeToAir,
+      nextEpisodeToAir,
       seasons,
       name,
       voteAverage,
