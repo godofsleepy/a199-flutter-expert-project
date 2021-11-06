@@ -1,4 +1,4 @@
-import 'package:ditonton/data/models/movie_table.dart';
+import 'package:ditonton/data/models/movie_model/movie_table.dart';
 import 'package:ditonton/domain/entities/episode_to_air.dart';
 import 'package:ditonton/domain/entities/genre.dart';
 import 'package:ditonton/domain/entities/movie.dart';
