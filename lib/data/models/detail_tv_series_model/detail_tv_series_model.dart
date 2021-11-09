@@ -1,5 +1,10 @@
 import 'package:ditonton/data/models/genre_model.dart';
+import 'package:ditonton/domain/entities/episode_to_air.dart';
+import 'package:ditonton/domain/entities/genre.dart';
+import 'package:ditonton/domain/entities/season.dart';
+import 'package:ditonton/domain/entities/tv_series_detail.dart';
 import 'package:equatable/equatable.dart';
+import 'package:intl/intl.dart';
 import 'last_episode_to_air.dart';
 import 'next_episode_to_air.dart';
 import 'season.dart';
@@ -24,7 +29,7 @@ class DetailTvSeriesModel extends Equatable {
   final List<SeasonModel>? seasons;
   final String? status;
   final String? tagline;
-  final int? voteAverage;
+  final double? voteAverage;
   final int? voteCount;
 
   const DetailTvSeriesModel({
@@ -82,8 +87,8 @@ class DetailTvSeriesModel extends Equatable {
           .toList(),
       status: json['status'] as String?,
       tagline: json['tagline'] as String?,
-      voteAverage: json['vote_average'] as int?,
-      voteCount: json['vote_count'] as int?,
+      voteAverage: json['vote_average'],
+      voteCount: json['vote_count'],
     );
   }
 
@@ -110,6 +115,71 @@ class DetailTvSeriesModel extends Equatable {
         'vote_average': voteAverage,
         'vote_count': voteCount,
       };
+
+  TvSeriesDetail toEntity() => TvSeriesDetail(
+        id: this.id!,
+        overview: this.overview ?? "",
+        posterPath: this.posterPath ?? "",
+        name: this.name ?? "",
+        backdropPath: this.backdropPath,
+        firstAirDate: this.firstAirDate != null
+            ? DateFormat('dd/MM/yyyy').parse(this.firstAirDate!)
+            : null,
+        numberOfEpisode: this.numberOfEpisodes,
+        numberOfSeasons: this.numberOfSeasons,
+        nextEpisodeToAir: this.nextEpisodeToAir != null
+            ? EpisodeToAir(
+                airDate: this.nextEpisodeToAir?.airDate,
+                episodeNumber: this.nextEpisodeToAir?.episodeNumber,
+                id: this.nextEpisodeToAir?.id,
+                name: this.nextEpisodeToAir?.name,
+                overview: this.nextEpisodeToAir?.overview,
+                productionCode: this.nextEpisodeToAir?.productionCode,
+                seasonNumber: this.nextEpisodeToAir?.seasonNumber,
+                stillPath: this.nextEpisodeToAir?.stillPath,
+                voteAverage: this.nextEpisodeToAir?.voteAverage,
+                voteCount: this.nextEpisodeToAir?.voteCount,
+              )
+            : null,
+        lastAirDate: this.lastAirDate != null
+            ? DateFormat('dd/MM/yyyy').parse(this.lastAirDate!)
+            : null,
+        lastEpisodeToAir: this.lastEpisodeToAir != null
+            ? EpisodeToAir(
+                airDate: this.lastEpisodeToAir?.airDate,
+                episodeNumber: this.lastEpisodeToAir?.episodeNumber,
+                id: this.lastEpisodeToAir?.id,
+                name: this.lastEpisodeToAir?.name,
+                overview: this.lastEpisodeToAir?.overview,
+                productionCode: this.lastEpisodeToAir?.productionCode,
+                seasonNumber: this.lastEpisodeToAir?.seasonNumber,
+                stillPath: this.lastEpisodeToAir?.stillPath,
+                voteAverage: this.lastEpisodeToAir?.voteAverage,
+                voteCount: this.lastEpisodeToAir?.voteCount,
+              )
+            : null,
+        voteAverage: this.voteAverage ?? 0.0,
+        voteCount: this.voteCount ?? 0,
+        genres: this
+                .genres
+                ?.map<Genre>((e) => Genre(id: e.id, name: e.name))
+                .toList() ??
+            [],
+        seasons: this
+                .seasons
+                ?.map<Season>(
+                  (e) => Season(
+                    airDate: e.airDate,
+                    id: e.id,
+                    episodeCount: e.episodeCount,
+                    overview: e.overview,
+                    name: e.name,
+                    posterPath: e.posterPath,
+                  ),
+                )
+                .toList() ??
+            [],
+      );
 
   @override
   List<Object?> get props {

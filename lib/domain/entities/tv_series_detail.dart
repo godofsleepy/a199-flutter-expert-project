@@ -9,12 +9,12 @@ class TvSeriesDetail extends Equatable {
     required this.backdropPath,
     required this.genres,
     required this.id,
-    required this.originalTitle,
     required this.overview,
     required this.posterPath,
     required this.firstAirDate,
     required this.lastAirDate,
-    required this.tagline,
+    this.numberOfEpisode,
+    this.numberOfSeasons,
     required this.lastEpisodeToAir,
     required this.nextEpisodeToAir,
     required this.seasons,
@@ -26,14 +26,14 @@ class TvSeriesDetail extends Equatable {
   final String? backdropPath;
   final List<Genre> genres;
   final int id;
-  final String originalTitle;
   final String overview;
   final String posterPath;
-  final DateTime firstAirDate;
-  final DateTime lastAirDate;
-  final String tagline;
-  final EpisodeToAir lastEpisodeToAir;
-  final EpisodeToAir nextEpisodeToAir;
+  final DateTime? firstAirDate;
+  final DateTime? lastAirDate;
+  final int? numberOfEpisode;
+  final int? numberOfSeasons;
+  final EpisodeToAir? lastEpisodeToAir;
+  final EpisodeToAir? nextEpisodeToAir;
   final List<Season> seasons;
   final String name;
   final double voteAverage;
@@ -45,12 +45,12 @@ class TvSeriesDetail extends Equatable {
       backdropPath,
       genres,
       id,
-      originalTitle,
       overview,
       posterPath,
       firstAirDate,
       lastAirDate,
-      tagline,
+      numberOfEpisode,
+      numberOfSeasons,
       lastEpisodeToAir,
       nextEpisodeToAir,
       seasons,

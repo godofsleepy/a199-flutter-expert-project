@@ -1,3 +1,4 @@
+import 'package:ditonton/domain/entities/tv_series.dart';
 import 'package:equatable/equatable.dart';
 
 class TvSeriesModel extends Equatable {
@@ -62,6 +63,22 @@ class TvSeriesModel extends Equatable {
         'vote_average': voteAverage,
         'vote_count': voteCount,
       };
+
+  TvSeries toEntity() => TvSeries(
+        id: id,
+        overview: overview,
+        posterPath: posterPath,
+        name: name,
+        backdropPath: backdropPath,
+        firstAirDate: firstAirDate,
+        originCountry: originCountry,
+        originalLanguage: originalLanguage,
+        originalName: originalName,
+        popularity: popularity,
+        voteAverage: voteAverage,
+        voteCount: voteCount,
+        genreIds: genreIds,
+      );
 
   @override
   List<Object?> get props {
