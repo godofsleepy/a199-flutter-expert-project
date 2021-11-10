@@ -13,7 +13,7 @@ class TvSeries extends Equatable {
   String? overview;
   double? popularity;
   String? posterPath;
-  int? voteAverage;
+  double? voteAverage;
   int? voteCount;
 
   TvSeries({

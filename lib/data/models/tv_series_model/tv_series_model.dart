@@ -13,7 +13,7 @@ class TvSeriesModel extends Equatable {
   final String? overview;
   final double? popularity;
   final String? posterPath;
-  final int? voteAverage;
+  final double? voteAverage;
   final int? voteCount;
 
   const TvSeriesModel({
@@ -44,7 +44,7 @@ class TvSeriesModel extends Equatable {
         overview: json['overview'] as String?,
         popularity: (json['popularity'] as num?)?.toDouble(),
         posterPath: json['poster_path'] as String?,
-        voteAverage: json['vote_average'] as int?,
+        voteAverage: json['vote_average'] as double?,
         voteCount: json['vote_count'] as int?,
       );
 

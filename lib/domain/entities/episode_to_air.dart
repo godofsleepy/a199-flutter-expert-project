@@ -9,7 +9,7 @@ class EpisodeToAir extends Equatable {
   final String? productionCode;
   final int? seasonNumber;
   final String? stillPath;
-  final int? voteAverage;
+  final double? voteAverage;
   final int? voteCount;
 
   const EpisodeToAir({

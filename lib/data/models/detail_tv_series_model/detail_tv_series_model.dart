@@ -5,8 +5,7 @@ import 'package:ditonton/domain/entities/season.dart';
 import 'package:ditonton/domain/entities/tv_series_detail.dart';
 import 'package:equatable/equatable.dart';
 import 'package:intl/intl.dart';
-import 'last_episode_to_air.dart';
-import 'next_episode_to_air.dart';
+import 'episode_to_air_model.dart';
 import 'season.dart';
 
 class DetailTvSeriesModel extends Equatable {
@@ -16,9 +15,9 @@ class DetailTvSeriesModel extends Equatable {
   final List<GenreModel>? genres;
   final int? id;
   final String? lastAirDate;
-  final LastEpisodeToAirModel? lastEpisodeToAir;
+  final EpisodeToAirModel? lastEpisodeToAir;
   final String? name;
-  final NextEpisodeToAirModel? nextEpisodeToAir;
+  final EpisodeToAirModel? nextEpisodeToAir;
   final int? numberOfEpisodes;
   final int? numberOfSeasons;
   final String? originalLanguage;
@@ -68,12 +67,12 @@ class DetailTvSeriesModel extends Equatable {
       lastAirDate: json['last_air_date'] as String?,
       lastEpisodeToAir: json['last_episode_to_air'] == null
           ? null
-          : LastEpisodeToAirModel.fromJson(
+          : EpisodeToAirModel.fromJson(
               json['last_episode_to_air'] as Map<String, dynamic>),
       name: json['name'] as String?,
       nextEpisodeToAir: json['next_episode_to_air'] == null
           ? null
-          : NextEpisodeToAirModel.fromJson(
+          : EpisodeToAirModel.fromJson(
               json['next_episode_to_air'] as Map<String, dynamic>),
       numberOfEpisodes: json['number_of_episodes'] as int?,
       numberOfSeasons: json['number_of_seasons'] as int?,

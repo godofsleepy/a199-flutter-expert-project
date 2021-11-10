@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
 
-class NextEpisodeToAirModel extends Equatable {
+class EpisodeToAirModel extends Equatable {
   final String? airDate;
   final int? episodeNumber;
   final int? id;
@@ -9,10 +9,10 @@ class NextEpisodeToAirModel extends Equatable {
   final String? productionCode;
   final int? seasonNumber;
   final dynamic stillPath;
-  final int? voteAverage;
+  final double? voteAverage;
   final int? voteCount;
 
-  const NextEpisodeToAirModel({
+  const EpisodeToAirModel({
     this.airDate,
     this.episodeNumber,
     this.id,
@@ -25,8 +25,8 @@ class NextEpisodeToAirModel extends Equatable {
     this.voteCount,
   });
 
-  factory NextEpisodeToAirModel.fromJson(Map<String, dynamic> json) {
-    return NextEpisodeToAirModel(
+  factory EpisodeToAirModel.fromJson(Map<String, dynamic> json) {
+    return EpisodeToAirModel(
       airDate: json['air_date'] as String?,
       episodeNumber: json['episode_number'] as int?,
       id: json['id'] as int?,
@@ -35,7 +35,7 @@ class NextEpisodeToAirModel extends Equatable {
       productionCode: json['production_code'] as String?,
       seasonNumber: json['season_number'] as int?,
       stillPath: json['still_path'] as dynamic?,
-      voteAverage: json['vote_average'] as int?,
+      voteAverage: json['vote_average'] as double?,
       voteCount: json['vote_count'] as int?,
     );
   }
