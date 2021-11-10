@@ -8,7 +8,7 @@ class EpisodeToAir extends Equatable {
   final String? overview;
   final String? productionCode;
   final int? seasonNumber;
-  final String? stillPath;
+
   final double? voteAverage;
   final int? voteCount;
 
@@ -20,36 +20,9 @@ class EpisodeToAir extends Equatable {
     this.overview,
     this.productionCode,
     this.seasonNumber,
-    this.stillPath,
     this.voteAverage,
     this.voteCount,
   });
-
-  // factory EpisodeToAir.fromJson(Map<String, dynamic> json) => EpisodeToAir(
-  //       airDate: json['air_date'] as String?,
-  //       episodeNumber: json['episode_number'] as int?,
-  //       id: json['id'] as int?,
-  //       name: json['name'] as String?,
-  //       overview: json['overview'] as String?,
-  //       productionCode: json['production_code'] as String?,
-  //       seasonNumber: json['season_number'] as int?,
-  //       stillPath: json['still_path'] as String?,
-  //       voteAverage: json['vote_average'] as int?,
-  //       voteCount: json['vote_count'] as int?,
-  //     );
-
-  // Map<String, dynamic> toJson() => {
-  //       'air_date': airDate,
-  //       'episode_number': episodeNumber,
-  //       'id': id,
-  //       'name': name,
-  //       'overview': overview,
-  //       'production_code': productionCode,
-  //       'season_number': seasonNumber,
-  //       'still_path': stillPath,
-  //       'vote_average': voteAverage,
-  //       'vote_count': voteCount,
-  //     };
 
   @override
   List<Object?> get props {
@@ -61,7 +34,6 @@ class EpisodeToAir extends Equatable {
       overview,
       productionCode,
       seasonNumber,
-      stillPath,
       voteAverage,
       voteCount,
     ];

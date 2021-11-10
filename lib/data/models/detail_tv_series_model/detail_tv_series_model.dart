@@ -122,7 +122,7 @@ class DetailTvSeriesModel extends Equatable {
         name: this.name ?? "",
         backdropPath: this.backdropPath,
         firstAirDate: this.firstAirDate != null
-            ? DateFormat('dd/MM/yyyy').parse(this.firstAirDate!)
+            ? DateFormat("yyyy-MM-dd").parse(this.firstAirDate!)
             : null,
         numberOfEpisode: this.numberOfEpisodes,
         numberOfSeasons: this.numberOfSeasons,
@@ -135,13 +135,12 @@ class DetailTvSeriesModel extends Equatable {
                 overview: this.nextEpisodeToAir?.overview,
                 productionCode: this.nextEpisodeToAir?.productionCode,
                 seasonNumber: this.nextEpisodeToAir?.seasonNumber,
-                stillPath: this.nextEpisodeToAir?.stillPath,
                 voteAverage: this.nextEpisodeToAir?.voteAverage,
                 voteCount: this.nextEpisodeToAir?.voteCount,
               )
             : null,
         lastAirDate: this.lastAirDate != null
-            ? DateFormat('dd/MM/yyyy').parse(this.lastAirDate!)
+            ? DateFormat("yyyy-MM-dd").parse(this.lastAirDate!)
             : null,
         lastEpisodeToAir: this.lastEpisodeToAir != null
             ? EpisodeToAir(
@@ -152,7 +151,6 @@ class DetailTvSeriesModel extends Equatable {
                 overview: this.lastEpisodeToAir?.overview,
                 productionCode: this.lastEpisodeToAir?.productionCode,
                 seasonNumber: this.lastEpisodeToAir?.seasonNumber,
-                stillPath: this.lastEpisodeToAir?.stillPath,
                 voteAverage: this.lastEpisodeToAir?.voteAverage,
                 voteCount: this.lastEpisodeToAir?.voteCount,
               )
@@ -168,13 +166,13 @@ class DetailTvSeriesModel extends Equatable {
                 .seasons
                 ?.map<Season>(
                   (e) => Season(
-                    airDate: e.airDate,
-                    id: e.id,
-                    episodeCount: e.episodeCount,
-                    overview: e.overview,
-                    name: e.name,
-                    posterPath: e.posterPath,
-                  ),
+                      airDate: e.airDate,
+                      id: e.id,
+                      episodeCount: e.episodeCount,
+                      overview: e.overview,
+                      name: e.name,
+                      posterPath: e.posterPath,
+                      seasonNumber: e.seasonNumber),
                 )
                 .toList() ??
             [],

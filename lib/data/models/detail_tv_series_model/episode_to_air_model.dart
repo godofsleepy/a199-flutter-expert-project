@@ -8,7 +8,7 @@ class EpisodeToAirModel extends Equatable {
   final String? overview;
   final String? productionCode;
   final int? seasonNumber;
-  final dynamic stillPath;
+
   final double? voteAverage;
   final int? voteCount;
 
@@ -20,7 +20,6 @@ class EpisodeToAirModel extends Equatable {
     this.overview,
     this.productionCode,
     this.seasonNumber,
-    this.stillPath,
     this.voteAverage,
     this.voteCount,
   });
@@ -34,7 +33,6 @@ class EpisodeToAirModel extends Equatable {
       overview: json['overview'] as String?,
       productionCode: json['production_code'] as String?,
       seasonNumber: json['season_number'] as int?,
-      stillPath: json['still_path'] as dynamic?,
       voteAverage: json['vote_average'] as double?,
       voteCount: json['vote_count'] as int?,
     );
@@ -48,7 +46,6 @@ class EpisodeToAirModel extends Equatable {
         'overview': overview,
         'production_code': productionCode,
         'season_number': seasonNumber,
-        'still_path': stillPath,
         'vote_average': voteAverage,
         'vote_count': voteCount,
       };
@@ -63,7 +60,6 @@ class EpisodeToAirModel extends Equatable {
       overview,
       productionCode,
       seasonNumber,
-      stillPath,
       voteAverage,
       voteCount,
     ];
