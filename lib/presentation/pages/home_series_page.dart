@@ -2,6 +2,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:ditonton/common/constants.dart';
 import 'package:ditonton/common/state_enum.dart';
 import 'package:ditonton/domain/entities/tv_series.dart';
+import 'package:ditonton/presentation/pages/populer_series_page.dart';
+import 'package:ditonton/presentation/pages/top_rated_series_page.dart';
 import 'package:ditonton/presentation/provider/series_list_notifier.dart';
 import 'package:ditonton/presentation/widgets/subheading.dart';
 import 'package:flutter/material.dart';
@@ -64,7 +66,9 @@ class _HomeSeriesPageState extends State<HomeSeriesPage> {
               }),
               SubHeading(
                 title: 'Popular',
-                onTap: () {},
+                onTap: () {
+                  Navigator.pushNamed(context, PopularSeriesPage.ROUTE_NAME);
+                },
               ),
               Consumer<SeriesListNotifier>(builder: (context, data, child) {
                 final state = data.popularSeriesState;
@@ -80,7 +84,9 @@ class _HomeSeriesPageState extends State<HomeSeriesPage> {
               }),
               SubHeading(
                 title: 'Top Rated',
-                onTap: () {},
+                onTap: () {
+                  Navigator.pushNamed(context, TopRatedSeriesPage.ROUTE_NAME);
+                },
               ),
               Consumer<SeriesListNotifier>(builder: (context, data, child) {
                 final state = data.topRatedSeriesState;
