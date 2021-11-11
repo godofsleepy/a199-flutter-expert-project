@@ -3,6 +3,7 @@ import 'package:ditonton/common/constants.dart';
 import 'package:ditonton/common/state_enum.dart';
 import 'package:ditonton/domain/entities/tv_series.dart';
 import 'package:ditonton/presentation/pages/populer_series_page.dart';
+import 'package:ditonton/presentation/pages/search_series_page.dart';
 import 'package:ditonton/presentation/pages/series_detail_page.dart';
 import 'package:ditonton/presentation/pages/top_rated_series_page.dart';
 import 'package:ditonton/presentation/provider/series_list_notifier.dart';
@@ -37,7 +38,7 @@ class _HomeSeriesPageState extends State<HomeSeriesPage> {
         actions: [
           IconButton(
             onPressed: () {
-              // Navigator.pushNamed(context, SearchPage.ROUTE_NAME);
+              Navigator.pushNamed(context, SearchSeriesPage.ROUTE_NAME);
             },
             icon: Icon(Icons.search),
           )

@@ -155,9 +155,7 @@ class DetailContent extends StatelessWidget {
                             Text(
                               _showGenres(series.genres),
                             ),
-                            Text(
-                              _showDuration(10),
-                            ),
+                            Text("Total Episode : ${series.numberOfEpisode}"),
                             Row(
                               children: [
                                 RatingBarIndicator(
@@ -180,6 +178,124 @@ class DetailContent extends StatelessWidget {
                             Text(
                               series.overview,
                             ),
+                            if (series.lastEpisodeToAir != null)
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  SizedBox(height: 16),
+                                  Text(
+                                    'Last Episode',
+                                    style: kHeading6,
+                                  ),
+                                  ListTile(
+                                    isThreeLine: true,
+                                    leading: Text(
+                                      series.lastEpisodeToAir!.episodeNumber
+                                              ?.toString() ??
+                                          "",
+                                      style: TextStyle(
+                                        fontSize: 30,
+                                      ),
+                                    ),
+                                    title: Text(
+                                      series.lastEpisodeToAir!.name ?? "",
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    subtitle: Text(
+                                      series.lastEpisodeToAir!.overview ?? "",
+                                      maxLines: 3,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            if (series.nextEpisodeToAir != null)
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  SizedBox(height: 16),
+                                  Text(
+                                    'Next Episode',
+                                    style: kHeading6,
+                                  ),
+                                  ListTile(
+                                    isThreeLine: true,
+                                    leading: Text(
+                                      series.nextEpisodeToAir!.episodeNumber
+                                              ?.toString() ??
+                                          "-",
+                                      style: TextStyle(
+                                        fontSize: 30,
+                                      ),
+                                    ),
+                                    title: Text(
+                                      series.nextEpisodeToAir!.name ?? "-",
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    subtitle: Text(
+                                      series.nextEpisodeToAir!.overview ?? "-",
+                                      maxLines: 3,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            if (series.seasons.isNotEmpty)
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  SizedBox(height: 16),
+                                  Text(
+                                    'List Season',
+                                    style: kHeading6,
+                                  ),
+                                  ListView.separated(
+                                    shrinkWrap: true,
+                                    physics: NeverScrollableScrollPhysics(),
+                                    itemCount: series.seasons.length,
+                                    itemBuilder: (context, index) {
+                                      return ListTile(
+                                        isThreeLine: true,
+                                        leading: series.seasons[index]
+                                                    .posterPath !=
+                                                null
+                                            ? CachedNetworkImage(
+                                                imageUrl:
+                                                    'https://image.tmdb.org/t/p/w500${series.seasons[index].posterPath}',
+                                                height: 100,
+                                                fit: BoxFit.cover,
+                                                placeholder: (context, url) =>
+                                                    Center(
+                                                  child:
+                                                      CircularProgressIndicator(),
+                                                ),
+                                                errorWidget:
+                                                    (context, url, error) =>
+                                                        Icon(Icons.error),
+                                              )
+                                            : Container(),
+                                        title: Text(
+                                          series.seasons[index].name ?? "-",
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        subtitle: Text(
+                                          series.seasons[index].overview ?? "-",
+                                          maxLines: 3,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      );
+                                    },
+                                    separatorBuilder: (_, __) =>
+                                        SizedBox(height: 5),
+                                  )
+                                ],
+                              ),
                             SizedBox(height: 16),
                             Text(
                               'Recommendations',
@@ -290,16 +406,5 @@ class DetailContent extends StatelessWidget {
     }
 
     return result.substring(0, result.length - 2);
-  }
-
-  String _showDuration(int runtime) {
-    final int hours = runtime ~/ 60;
-    final int minutes = runtime % 60;
-
-    if (hours > 0) {
-      return '${hours}h ${minutes}m';
-    } else {
-      return '${minutes}m';
-    }
   }
 }
