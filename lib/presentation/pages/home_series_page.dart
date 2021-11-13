@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:ditonton/common/constants.dart';
 import 'package:ditonton/common/state_enum.dart';
 import 'package:ditonton/domain/entities/tv_series.dart';
+import 'package:ditonton/presentation/pages/now_playing_series_page.dart';
 import 'package:ditonton/presentation/pages/populer_series_page.dart';
 import 'package:ditonton/presentation/pages/search_series_page.dart';
 import 'package:ditonton/presentation/pages/series_detail_page.dart';
@@ -50,9 +51,14 @@ class _HomeSeriesPageState extends State<HomeSeriesPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                'Now Playing',
-                style: kHeading6,
+              SubHeading(
+                title: 'Now Playing',
+                onTap: () {
+                  Navigator.pushNamed(
+                    context,
+                    NowPlayingSeriesPage.ROUTE_NAME,
+                  );
+                },
               ),
               Consumer<SeriesListNotifier>(builder: (context, data, child) {
                 final state = data.nowPlayingState;

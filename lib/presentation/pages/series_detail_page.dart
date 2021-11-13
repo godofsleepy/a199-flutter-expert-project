@@ -5,6 +5,7 @@ import 'package:ditonton/domain/entities/genre.dart';
 import 'package:ditonton/domain/entities/tv_series.dart';
 import 'package:ditonton/domain/entities/tv_series_detail.dart';
 import 'package:ditonton/presentation/provider/series_detail_notifier.dart';
+import 'package:ditonton/presentation/widgets/custom_list_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:provider/provider.dart';
@@ -258,16 +259,14 @@ class DetailContent extends StatelessWidget {
                                     physics: NeverScrollableScrollPhysics(),
                                     itemCount: series.seasons.length,
                                     itemBuilder: (context, index) {
-                                      return ListTile(
-                                        isThreeLine: true,
-                                        leading: series.seasons[index]
+                                      return CustomListTile(
+                                        // isThreeLine: true,
+                                        thumbnail: series.seasons[index]
                                                     .posterPath !=
                                                 null
                                             ? CachedNetworkImage(
                                                 imageUrl:
                                                     'https://image.tmdb.org/t/p/w500${series.seasons[index].posterPath}',
-                                                height: 100,
-                                                fit: BoxFit.cover,
                                                 placeholder: (context, url) =>
                                                     Center(
                                                   child:
@@ -278,17 +277,11 @@ class DetailContent extends StatelessWidget {
                                                         Icon(Icons.error),
                                               )
                                             : Container(),
-                                        title: Text(
-                                          series.seasons[index].name ?? "-",
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                        subtitle: Text(
-                                          series.seasons[index].overview ?? "-",
-                                          maxLines: 3,
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
+                                        title:
+                                            series.seasons[index].name ?? "-",
+                                        description:
+                                            series.seasons[index].overview ??
+                                                "-",
                                       );
                                     },
                                     separatorBuilder: (_, __) =>
