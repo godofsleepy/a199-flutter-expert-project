@@ -3,6 +3,7 @@ import 'package:ditonton/common/state_enum.dart';
 import 'package:ditonton/presentation/provider/series_search_notifier.dart';
 import 'package:ditonton/presentation/widgets/series_card_list.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
 
 class SearchSeriesPage extends StatelessWidget {
@@ -21,8 +22,7 @@ class SearchSeriesPage extends StatelessWidget {
           children: [
             TextField(
               onSubmitted: (query) {
-                Provider.of<SeriesSearchNotifier>(context, listen: false)
-                    .fetchSeriesSearch(query);
+                context.read<SeriesSearchCubit>().fetchSeriesSearch(query);
               },
               decoration: InputDecoration(
                 hintText: 'Search title',
@@ -36,8 +36,8 @@ class SearchSeriesPage extends StatelessWidget {
               'Search Result',
               style: kHeading6,
             ),
-            Consumer<SeriesSearchNotifier>(
-              builder: (context, data, child) {
+            BlocBuilder<SeriesSearchCubit, SeriesSearchState>(
+              builder: (context, data) {
                 if (data.state == RequestState.Loading) {
                   return Center(
                     child: CircularProgressIndicator(),

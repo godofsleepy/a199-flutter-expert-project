@@ -10,6 +10,7 @@ import 'package:ditonton/presentation/pages/top_rated_series_page.dart';
 import 'package:ditonton/presentation/provider/series_list_notifier.dart';
 import 'package:ditonton/presentation/widgets/subheading.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
 
 class HomeSeriesPage extends StatefulWidget {
@@ -24,11 +25,10 @@ class _HomeSeriesPageState extends State<HomeSeriesPage> {
   @override
   void initState() {
     super.initState();
-    Future.microtask(
-        () => Provider.of<SeriesListNotifier>(context, listen: false)
-          ..fetchNowPlayingSeries()
-          ..fetchPopularSeries()
-          ..fetchTopRatedSeries());
+    Future.microtask(() => context.read<SeriesListCubit>()
+      ..fetchNowPlayingSeries()
+      ..fetchPopularSeries()
+      ..fetchTopRatedSeries());
   }
 
   @override
@@ -60,7 +60,8 @@ class _HomeSeriesPageState extends State<HomeSeriesPage> {
                   );
                 },
               ),
-              Consumer<SeriesListNotifier>(builder: (context, data, child) {
+              BlocBuilder<SeriesListCubit, SeriesListState>(
+                  builder: (context, data) {
                 final state = data.nowPlayingState;
                 if (state == RequestState.Loading) {
                   return Center(
@@ -78,7 +79,8 @@ class _HomeSeriesPageState extends State<HomeSeriesPage> {
                   Navigator.pushNamed(context, PopularSeriesPage.ROUTE_NAME);
                 },
               ),
-              Consumer<SeriesListNotifier>(builder: (context, data, child) {
+              BlocBuilder<SeriesListCubit, SeriesListState>(
+                  builder: (context, data) {
                 final state = data.popularSeriesState;
                 if (state == RequestState.Loading) {
                   return Center(
@@ -96,7 +98,8 @@ class _HomeSeriesPageState extends State<HomeSeriesPage> {
                   Navigator.pushNamed(context, TopRatedSeriesPage.ROUTE_NAME);
                 },
               ),
-              Consumer<SeriesListNotifier>(builder: (context, data, child) {
+              BlocBuilder<SeriesListCubit, SeriesListState>(
+                  builder: (context, data) {
                 final state = data.topRatedSeriesState;
                 if (state == RequestState.Loading) {
                   return Center(

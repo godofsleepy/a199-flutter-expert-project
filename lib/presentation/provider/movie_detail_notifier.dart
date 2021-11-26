@@ -1,117 +1,148 @@
+import 'package:equatable/equatable.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import 'package:ditonton/common/state_enum.dart';
 import 'package:ditonton/domain/entities/movie.dart';
 import 'package:ditonton/domain/entities/movie_detail.dart';
 import 'package:ditonton/domain/usecases/get_movie_detail.dart';
 import 'package:ditonton/domain/usecases/get_movie_recommendations.dart';
-import 'package:ditonton/common/state_enum.dart';
 import 'package:ditonton/domain/usecases/get_watchlist_status.dart';
 import 'package:ditonton/domain/usecases/remove_watchlist.dart';
 import 'package:ditonton/domain/usecases/save_watchlist.dart';
-import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 
-class MovieDetailNotifier extends ChangeNotifier {
-  static const watchlistAddSuccessMessage = 'Added to Watchlist';
-  static const watchlistRemoveSuccessMessage = 'Removed from Watchlist';
+class MovieDetailState extends Equatable {
+  final MovieDetail? movie;
+  final String message;
+  final String watchlistMessage;
+  final RequestState movieState;
+  final RequestState recommendationState;
+  final List<Movie> movieRecommendations;
+  final bool isAddedToWatchlist;
 
+  MovieDetailState({
+    this.movie,
+    this.message = "",
+    this.watchlistMessage = "",
+    this.movieState = RequestState.Empty,
+    this.recommendationState = RequestState.Empty,
+    this.movieRecommendations = const [],
+    this.isAddedToWatchlist = false,
+  });
+
+  MovieDetailState copyWith({
+    MovieDetail? movie,
+    String? message,
+    String? watchlistMessage,
+    RequestState? movieState,
+    RequestState? recommendationState,
+    List<Movie>? movieRecommendations,
+    bool? isAddedToWatchlist,
+  }) {
+    return MovieDetailState(
+      movie: movie ?? this.movie,
+      message: message ?? this.message,
+      watchlistMessage: watchlistMessage ?? this.watchlistMessage,
+      movieState: movieState ?? this.movieState,
+      recommendationState: recommendationState ?? this.recommendationState,
+      movieRecommendations: movieRecommendations ?? this.movieRecommendations,
+      isAddedToWatchlist: isAddedToWatchlist ?? this.isAddedToWatchlist,
+    );
+  }
+
+  @override
+  List<Object?> get props {
+    return [
+      movie,
+      message,
+      watchlistMessage,
+      movieState,
+      recommendationState,
+      movieRecommendations,
+      isAddedToWatchlist,
+    ];
+  }
+}
+
+class MovieDetailCubit extends Cubit<MovieDetailState> {
   final GetMovieDetail getMovieDetail;
   final GetMovieRecommendations getMovieRecommendations;
   final GetWatchListStatus getWatchListStatus;
   final SaveWatchlist saveWatchlist;
   final RemoveWatchlist removeWatchlist;
-
-  MovieDetailNotifier({
+  MovieDetailCubit({
     required this.getMovieDetail,
     required this.getMovieRecommendations,
     required this.getWatchListStatus,
     required this.saveWatchlist,
     required this.removeWatchlist,
-  });
+  }) : super(MovieDetailState());
 
-  late MovieDetail _movie;
-  MovieDetail get movie => _movie;
-
-  RequestState _movieState = RequestState.Empty;
-  RequestState get movieState => _movieState;
-
-  List<Movie> _movieRecommendations = [];
-  List<Movie> get movieRecommendations => _movieRecommendations;
-
-  RequestState _recommendationState = RequestState.Empty;
-  RequestState get recommendationState => _recommendationState;
-
-  String _message = '';
-  String get message => _message;
-
-  bool _isAddedtoWatchlist = false;
-  bool get isAddedToWatchlist => _isAddedtoWatchlist;
+  static const watchlistAddSuccessMessage = 'Added to Watchlist';
+  static const watchlistRemoveSuccessMessage = 'Removed from Watchlist';
 
   Future<void> fetchMovieDetail(int id) async {
-    _movieState = RequestState.Loading;
-    notifyListeners();
+    emit(state.copyWith(movieState: RequestState.Loading));
+
     final detailResult = await getMovieDetail.execute(id);
     final recommendationResult = await getMovieRecommendations.execute(id);
     detailResult.fold(
       (failure) {
-        _movieState = RequestState.Error;
-        _message = failure.message;
-        notifyListeners();
+        emit(state.copyWith(
+            movieState: RequestState.Error, message: failure.message));
       },
       (movie) {
-        _recommendationState = RequestState.Loading;
-        _movie = movie;
-        notifyListeners();
+        emit(state.copyWith(
+            recommendationState: RequestState.Loading, movie: movie));
+
         recommendationResult.fold(
           (failure) {
-            _recommendationState = RequestState.Error;
-            _message = failure.message;
+            emit(state.copyWith(
+                recommendationState: RequestState.Error,
+                message: failure.message));
           },
           (movies) {
-            _recommendationState = RequestState.Loaded;
-            _movieRecommendations = movies;
+            emit(state.copyWith(
+                recommendationState: RequestState.Loaded,
+                movieRecommendations: movies));
           },
         );
-        _movieState = RequestState.Loaded;
-        notifyListeners();
+        emit(state.copyWith(movieState: RequestState.Loaded));
       },
     );
   }
 
-  String _watchlistMessage = '';
-  String get watchlistMessage => _watchlistMessage;
-
-  Future<void> addWatchlist(MovieDetail movie) async {
+  addWatchlist(MovieDetail movie) async {
     final result = await saveWatchlist.execute(movie);
 
     await result.fold(
       (failure) async {
-        _watchlistMessage = failure.message;
+        emit(state.copyWith(watchlistMessage: failure.message));
       },
       (successMessage) async {
-        _watchlistMessage = successMessage;
+        emit(state.copyWith(watchlistMessage: successMessage));
       },
     );
 
     await loadWatchlistStatus(movie.id);
   }
 
-  Future<void> removeFromWatchlist(MovieDetail movie) async {
+  removeFromWatchlist(MovieDetail movie) async {
     final result = await removeWatchlist.execute(movie);
 
     await result.fold(
       (failure) async {
-        _watchlistMessage = failure.message;
+        emit(state.copyWith(watchlistMessage: failure.message));
       },
       (successMessage) async {
-        _watchlistMessage = successMessage;
+        emit(state.copyWith(watchlistMessage: successMessage));
       },
     );
 
     await loadWatchlistStatus(movie.id);
   }
 
-  Future<void> loadWatchlistStatus(int id) async {
+  loadWatchlistStatus(int id) async {
     final result = await getWatchListStatus.execute(id);
-    _isAddedtoWatchlist = result;
-    notifyListeners();
+    emit(state.copyWith(isAddedToWatchlist: result));
   }
 }

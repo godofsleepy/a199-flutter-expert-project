@@ -46,14 +46,14 @@ final locator = GetIt.instance;
 void init() {
   // provider
   locator.registerFactory(
-    () => MovieListNotifier(
+    () => MovieListCubit(
       getNowPlayingMovies: locator(),
       getPopularMovies: locator(),
       getTopRatedMovies: locator(),
     ),
   );
   locator.registerFactory(
-    () => MovieDetailNotifier(
+    () => MovieDetailCubit(
       getMovieDetail: locator(),
       getMovieRecommendations: locator(),
       getWatchListStatus: locator(),
@@ -62,43 +62,43 @@ void init() {
     ),
   );
   locator.registerFactory(
-    () => SeriesListNotifier(
+    () => SeriesListCubit(
         getNowPlayingSeries: locator(),
         getPopulerTvSeries: locator(),
         getTopRatedMovies: locator()),
   );
   locator.registerFactory(
-    () => MovieSearchNotifier(
+    () => MovieSearchCubit(
       searchMovies: locator(),
     ),
   );
   locator.registerFactory(
-    () => PopularMoviesNotifier(
-      locator(),
+    () => PopulerMoviesCubit(
+      getPopularMovies: locator(),
     ),
   );
   locator.registerFactory(
-    () => TopRatedMoviesNotifier(
+    () => TopRatedMovieCubit(
       getTopRatedMovies: locator(),
     ),
   );
   locator.registerFactory(
-    () => WatchlistMovieNotifier(
+    () => WatchListMovieCubit(
       getWatchlistMovies: locator(),
     ),
   );
   locator.registerFactory(
-    () => WatchlistSeriesNotifier(
+    () => WatchListSeriesCubit(
       getWatchlistTvSeries: locator(),
     ),
   );
   locator.registerFactory(
-    () => TopRatedSeriesNotifier(
+    () => TopRatedSeriesCubit(
       getTopRatedSeries: locator(),
     ),
   );
   locator.registerFactory(
-    () => SeriesDetailNotifier(
+    () => SeriesDetailCubit(
       getSeriesDetail: locator(),
       getSeriesRecommendations: locator(),
       getWatchListStatus: locator(),
@@ -107,17 +107,17 @@ void init() {
     ),
   );
   locator.registerFactory(
-    () => SeriesSearchNotifier(
+    () => SeriesSearchCubit(
       searchTvSeries: locator(),
     ),
   );
   locator.registerFactory(
-    () => PopularSeriesNotifier(
+    () => PopulerSeriesCubit(
       getPopularSeries: locator(),
     ),
   );
   locator.registerFactory(
-    () => NowPlayingSeriesNotifier(
+    () => NowPlayingSeriesCubit(
       getNowPlaying: locator(),
     ),
   );

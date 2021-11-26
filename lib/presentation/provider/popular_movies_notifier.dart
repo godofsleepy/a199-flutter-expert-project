@@ -1,38 +1,60 @@
+import 'package:equatable/equatable.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
 import 'package:ditonton/common/state_enum.dart';
 import 'package:ditonton/domain/entities/movie.dart';
 import 'package:ditonton/domain/usecases/get_popular_movies.dart';
-import 'package:flutter/foundation.dart';
 
-class PopularMoviesNotifier extends ChangeNotifier {
+class PopulerMovieState extends Equatable {
+  final RequestState state;
+  final List<Movie> movies;
+  final String message;
+
+  PopulerMovieState({
+    this.state = RequestState.Empty,
+    this.movies = const [],
+    this.message = "",
+  });
+
+  @override
+  List<Object> get props => [state, movies, message];
+
+  PopulerMovieState copyWith({
+    RequestState? state,
+    List<Movie>? movies,
+    String? message,
+  }) {
+    return PopulerMovieState(
+      state: state ?? this.state,
+      movies: movies ?? this.movies,
+      message: message ?? this.message,
+    );
+  }
+}
+
+class PopulerMoviesCubit extends Cubit<PopulerMovieState> {
   final GetPopularMovies getPopularMovies;
 
-  PopularMoviesNotifier(this.getPopularMovies);
+  PopulerMoviesCubit({
+    required this.getPopularMovies,
+  }) : super(PopulerMovieState());
 
-  RequestState _state = RequestState.Empty;
-  RequestState get state => _state;
-
-  List<Movie> _movies = [];
-  List<Movie> get movies => _movies;
-
-  String _message = '';
-  String get message => _message;
-
-  Future<void> fetchPopularMovies() async {
-    _state = RequestState.Loading;
-    notifyListeners();
+  fetchPopularMovies() async {
+    emit(state.copyWith(state: RequestState.Loading));
 
     final result = await getPopularMovies.execute();
 
     result.fold(
       (failure) {
-        _message = failure.message;
-        _state = RequestState.Error;
-        notifyListeners();
+        emit(state.copyWith(
+            message: failure.message, state: RequestState.Error));
       },
       (moviesData) {
-        _movies = moviesData;
-        _state = RequestState.Loaded;
-        notifyListeners();
+        emit(state.copyWith(
+          movies: moviesData,
+          state: RequestState.Loaded,
+        ));
       },
     );
   }

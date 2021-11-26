@@ -1,4 +1,6 @@
+import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:ditonton/common/state_enum.dart';
 import 'package:ditonton/domain/entities/tv_series.dart';
@@ -6,90 +8,128 @@ import 'package:ditonton/domain/usecases/get_now_playing_tvseries.dart';
 import 'package:ditonton/domain/usecases/get_populer_tvseries.dart';
 import 'package:ditonton/domain/usecases/get_top_rated_tvseries.dart';
 
-class SeriesListNotifier extends ChangeNotifier {
-  var _nowPlayingSeries = <TvSeries>[];
-  List<TvSeries> get nowPlayingSeries => _nowPlayingSeries;
+class SeriesListState extends Equatable {
+  final List<TvSeries> nowPlayingSeries;
+  final RequestState nowPlayingState;
+  final List<TvSeries> popularSeries;
+  final RequestState popularSeriesState;
+  final List<TvSeries> topRatedSeries;
+  final RequestState topRatedSeriesState;
+  final String message;
 
-  RequestState _nowPlayingState = RequestState.Empty;
-  RequestState get nowPlayingState => _nowPlayingState;
+  SeriesListState({
+    this.nowPlayingSeries = const [],
+    this.nowPlayingState = RequestState.Empty,
+    this.popularSeries = const [],
+    this.popularSeriesState = RequestState.Empty,
+    this.topRatedSeries = const [],
+    this.topRatedSeriesState = RequestState.Empty,
+    this.message = "",
+  });
 
-  var _popularSeries = <TvSeries>[];
-  List<TvSeries> get popularSeries => _popularSeries;
+  SeriesListState copyWith({
+    List<TvSeries>? nowPlayingSeries,
+    RequestState? nowPlayingState,
+    List<TvSeries>? popularSeries,
+    RequestState? popularSeriesState,
+    List<TvSeries>? topRatedSeries,
+    RequestState? topRatedSeriesState,
+    String? message,
+  }) {
+    return SeriesListState(
+      nowPlayingSeries: nowPlayingSeries ?? this.nowPlayingSeries,
+      nowPlayingState: nowPlayingState ?? this.nowPlayingState,
+      popularSeries: popularSeries ?? this.popularSeries,
+      popularSeriesState: popularSeriesState ?? this.popularSeriesState,
+      topRatedSeries: topRatedSeries ?? this.topRatedSeries,
+      topRatedSeriesState: topRatedSeriesState ?? this.topRatedSeriesState,
+      message: message ?? this.message,
+    );
+  }
 
-  RequestState _popularSeriesState = RequestState.Empty;
-  RequestState get popularSeriesState => _popularSeriesState;
+  @override
+  List<Object> get props {
+    return [
+      nowPlayingSeries,
+      nowPlayingState,
+      popularSeries,
+      popularSeriesState,
+      topRatedSeries,
+      topRatedSeriesState,
+      message,
+    ];
+  }
+}
 
-  var _topRatedSeries = <TvSeries>[];
-  List<TvSeries> get topRatedSeries => _topRatedSeries;
-
-  RequestState _topRatedSeriesState = RequestState.Empty;
-  RequestState get topRatedSeriesState => _topRatedSeriesState;
-
-  String _message = '';
-  String get message => _message;
-
+class SeriesListCubit extends Cubit<SeriesListState> {
   final GetNowPlayingTvSeries getNowPlayingSeries;
   final GetPopulerTvSeries getPopulerTvSeries;
   final GetTopRatedTvSeries getTopRatedMovies;
-  SeriesListNotifier({
+
+  SeriesListCubit({
     required this.getNowPlayingSeries,
     required this.getPopulerTvSeries,
     required this.getTopRatedMovies,
-  });
+  }) : super(SeriesListState());
 
-  Future<void> fetchNowPlayingSeries() async {
-    _nowPlayingState = RequestState.Loading;
-    notifyListeners();
+  fetchNowPlayingSeries() async {
+    emit(state.copyWith(
+      nowPlayingState: RequestState.Loading,
+    ));
 
     final result = await getNowPlayingSeries.execute();
     result.fold(
       (failure) {
-        _nowPlayingState = RequestState.Error;
-        _message = failure.message;
-        notifyListeners();
+        emit(state.copyWith(
+          nowPlayingState: RequestState.Error,
+          message: failure.message,
+        ));
       },
       (data) {
-        _nowPlayingState = RequestState.Loaded;
-        _nowPlayingSeries = data;
-        notifyListeners();
+        emit(state.copyWith(
+          nowPlayingState: RequestState.Loaded,
+          nowPlayingSeries: data,
+        ));
       },
     );
   }
 
-  Future<void> fetchPopularSeries() async {
-    _popularSeriesState = RequestState.Loading;
-    notifyListeners();
+  fetchPopularSeries() async {
+    emit(state.copyWith(popularSeriesState: RequestState.Loading));
 
     final result = await getPopulerTvSeries.execute();
     result.fold(
       (failure) {
-        _popularSeriesState = RequestState.Error;
-        _message = failure.message;
-        notifyListeners();
+        emit(state.copyWith(
+          message: failure.message,
+          popularSeriesState: RequestState.Error,
+        ));
       },
       (data) {
-        _popularSeriesState = RequestState.Loaded;
-        _popularSeries = data;
-        notifyListeners();
+        emit(state.copyWith(
+          popularSeries: data,
+          popularSeriesState: RequestState.Loaded,
+        ));
       },
     );
   }
 
-  Future<void> fetchTopRatedSeries() async {
-    _topRatedSeriesState = RequestState.Loading;
-    notifyListeners();
+  fetchTopRatedSeries() async {
+    emit(state.copyWith(topRatedSeriesState: RequestState.Loading));
 
     final result = await getTopRatedMovies.execute();
     result.fold(
       (failure) {
-        _topRatedSeriesState = RequestState.Error;
-        _message = failure.message;
-        notifyListeners();
+        emit(state.copyWith(
+          topRatedSeriesState: RequestState.Error,
+          message: failure.message,
+        ));
       },
       (data) {
-        _topRatedSeriesState = RequestState.Loaded;
-        _topRatedSeries = data;
-        notifyListeners();
+        emit(state.copyWith(
+          topRatedSeriesState: RequestState.Loaded,
+          topRatedSeries: data,
+        ));
       },
     );
   }
