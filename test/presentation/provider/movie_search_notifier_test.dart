@@ -12,17 +12,12 @@ import 'movie_search_notifier_test.mocks.dart';
 
 @GenerateMocks([SearchMovies])
 void main() {
-  late MovieSearchNotifier provider;
+  late MovieSearchCubit provider;
   late MockSearchMovies mockSearchMovies;
-  late int listenerCallCount;
 
   setUp(() {
-    listenerCallCount = 0;
     mockSearchMovies = MockSearchMovies();
-    provider = MovieSearchNotifier(searchMovies: mockSearchMovies)
-      ..addListener(() {
-        listenerCallCount += 1;
-      });
+    provider = MovieSearchCubit(searchMovies: mockSearchMovies);
   });
 
   final tMovieModel = Movie(
@@ -52,7 +47,7 @@ void main() {
       // act
       provider.fetchMovieSearch(tQuery);
       // assert
-      expect(provider.state, RequestState.Loading);
+      expect(provider.state.state, RequestState.Loading);
     });
 
     test('should change search result data when data is gotten successfully',
@@ -63,9 +58,8 @@ void main() {
       // act
       await provider.fetchMovieSearch(tQuery);
       // assert
-      expect(provider.state, RequestState.Loaded);
-      expect(provider.searchResult, tMovieList);
-      expect(listenerCallCount, 2);
+      expect(provider.state.state, RequestState.Loaded);
+      expect(provider.state.searchResult, tMovieList);
     });
 
     test('should return error when data is unsuccessful', () async {
@@ -75,9 +69,8 @@ void main() {
       // act
       await provider.fetchMovieSearch(tQuery);
       // assert
-      expect(provider.state, RequestState.Error);
-      expect(provider.message, 'Server Failure');
-      expect(listenerCallCount, 2);
+      expect(provider.state.state, RequestState.Error);
+      expect(provider.state.message, 'Server Failure');
     });
   });
 }

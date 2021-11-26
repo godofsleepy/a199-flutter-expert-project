@@ -14,24 +14,20 @@ import 'movie_list_notifier_test.mocks.dart';
 
 @GenerateMocks([GetNowPlayingMovies, GetPopularMovies, GetTopRatedMovies])
 void main() {
-  late MovieListNotifier provider;
+  late MovieListCubit provider;
   late MockGetNowPlayingMovies mockGetNowPlayingMovies;
   late MockGetPopularMovies mockGetPopularMovies;
   late MockGetTopRatedMovies mockGetTopRatedMovies;
-  late int listenerCallCount;
 
   setUp(() {
-    listenerCallCount = 0;
     mockGetNowPlayingMovies = MockGetNowPlayingMovies();
     mockGetPopularMovies = MockGetPopularMovies();
     mockGetTopRatedMovies = MockGetTopRatedMovies();
-    provider = MovieListNotifier(
+    provider = MovieListCubit(
       getNowPlayingMovies: mockGetNowPlayingMovies,
       getPopularMovies: mockGetPopularMovies,
       getTopRatedMovies: mockGetTopRatedMovies,
-    )..addListener(() {
-        listenerCallCount += 1;
-      });
+    );
   });
 
   final tMovie = Movie(
@@ -53,7 +49,7 @@ void main() {
 
   group('now playing movies', () {
     test('initialState should be Empty', () {
-      expect(provider.nowPlayingState, equals(RequestState.Empty));
+      expect(provider.state.nowPlayingState, equals(RequestState.Empty));
     });
 
     test('should get data from the usecase', () async {
@@ -73,7 +69,7 @@ void main() {
       // act
       provider.fetchNowPlayingMovies();
       // assert
-      expect(provider.nowPlayingState, RequestState.Loading);
+      expect(provider.state.nowPlayingState, RequestState.Loading);
     });
 
     test('should change movies when data is gotten successfully', () async {
@@ -83,9 +79,8 @@ void main() {
       // act
       await provider.fetchNowPlayingMovies();
       // assert
-      expect(provider.nowPlayingState, RequestState.Loaded);
-      expect(provider.nowPlayingMovies, tMovieList);
-      expect(listenerCallCount, 2);
+      expect(provider.state.nowPlayingState, RequestState.Loaded);
+      expect(provider.state.nowPlayingMovies, tMovieList);
     });
 
     test('should return error when data is unsuccessful', () async {
@@ -95,9 +90,8 @@ void main() {
       // act
       await provider.fetchNowPlayingMovies();
       // assert
-      expect(provider.nowPlayingState, RequestState.Error);
-      expect(provider.message, 'Server Failure');
-      expect(listenerCallCount, 2);
+      expect(provider.state.nowPlayingState, RequestState.Error);
+      expect(provider.state.message, 'Server Failure');
     });
   });
 
@@ -109,7 +103,7 @@ void main() {
       // act
       provider.fetchPopularMovies();
       // assert
-      expect(provider.popularMoviesState, RequestState.Loading);
+      expect(provider.state.popularMoviesState, RequestState.Loading);
       // verify(provider.setState(RequestState.Loading));
     });
 
@@ -121,9 +115,8 @@ void main() {
       // act
       await provider.fetchPopularMovies();
       // assert
-      expect(provider.popularMoviesState, RequestState.Loaded);
-      expect(provider.popularMovies, tMovieList);
-      expect(listenerCallCount, 2);
+      expect(provider.state.popularMoviesState, RequestState.Loaded);
+      expect(provider.state.popularMovies, tMovieList);
     });
 
     test('should return error when data is unsuccessful', () async {
@@ -133,9 +126,8 @@ void main() {
       // act
       await provider.fetchPopularMovies();
       // assert
-      expect(provider.popularMoviesState, RequestState.Error);
-      expect(provider.message, 'Server Failure');
-      expect(listenerCallCount, 2);
+      expect(provider.state.popularMoviesState, RequestState.Error);
+      expect(provider.state.message, 'Server Failure');
     });
   });
 
@@ -147,7 +139,7 @@ void main() {
       // act
       provider.fetchTopRatedMovies();
       // assert
-      expect(provider.topRatedMoviesState, RequestState.Loading);
+      expect(provider.state.topRatedMoviesState, RequestState.Loading);
     });
 
     test('should change movies data when data is gotten successfully',
@@ -158,9 +150,8 @@ void main() {
       // act
       await provider.fetchTopRatedMovies();
       // assert
-      expect(provider.topRatedMoviesState, RequestState.Loaded);
-      expect(provider.topRatedMovies, tMovieList);
-      expect(listenerCallCount, 2);
+      expect(provider.state.topRatedMoviesState, RequestState.Loaded);
+      expect(provider.state.topRatedMovies, tMovieList);
     });
 
     test('should return error when data is unsuccessful', () async {
@@ -170,9 +161,8 @@ void main() {
       // act
       await provider.fetchTopRatedMovies();
       // assert
-      expect(provider.topRatedMoviesState, RequestState.Error);
-      expect(provider.message, 'Server Failure');
-      expect(listenerCallCount, 2);
+      expect(provider.state.topRatedMoviesState, RequestState.Error);
+      expect(provider.state.message, 'Server Failure');
     });
   });
 }
