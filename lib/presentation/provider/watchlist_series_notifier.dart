@@ -1,37 +1,60 @@
+import 'package:equatable/equatable.dart';
+
+import 'package:flutter_bloc/flutter_bloc.dart';
+
 import 'package:ditonton/common/state_enum.dart';
 import 'package:ditonton/domain/entities/tv_series.dart';
 import 'package:ditonton/domain/usecases/get_watchlist_tvseries.dart';
-import 'package:flutter/material.dart';
 
-class WatchlistSeriesNotifier extends ChangeNotifier {
-  var _watchlistSeries = <TvSeries>[];
-  List<TvSeries> get watchlistSeries => _watchlistSeries;
+class WatchlistSeriesState extends Equatable {
+  final List<TvSeries> watchlistSeries;
+  final RequestState watchlistState;
+  final String message;
 
-  var _watchlistState = RequestState.Empty;
-  RequestState get watchlistState => _watchlistState;
+  WatchlistSeriesState({
+    this.watchlistSeries = const [],
+    this.watchlistState = RequestState.Empty,
+    this.message = "",
+  });
 
-  String _message = '';
-  String get message => _message;
+  WatchlistSeriesState copyWith({
+    List<TvSeries>? watchlistSeries,
+    RequestState? watchlistState,
+    String? message,
+  }) {
+    return WatchlistSeriesState(
+      watchlistSeries: watchlistSeries ?? this.watchlistSeries,
+      watchlistState: watchlistState ?? this.watchlistState,
+      message: message ?? this.message,
+    );
+  }
 
-  WatchlistSeriesNotifier({required this.getWatchlistTvSeries});
+  @override
+  List<Object> get props => [watchlistSeries, watchlistState, message];
+}
 
+class WatchListSeriesCubit extends Cubit<WatchlistSeriesState> {
   final GetWatchlistTvSeries getWatchlistTvSeries;
+  WatchListSeriesCubit({
+    required this.getWatchlistTvSeries,
+  }) : super(WatchlistSeriesState());
 
-  Future<void> fetchWatchlistSeries() async {
-    _watchlistState = RequestState.Loading;
-    notifyListeners();
+  fetchWatchlistSeries() async {
+    emit(state.copyWith(watchlistState: RequestState.Loading));
 
     final result = await getWatchlistTvSeries.execute();
     result.fold(
       (failure) {
-        _watchlistState = RequestState.Error;
-        _message = failure.message;
-        notifyListeners();
+        emit(state.copyWith(
+          watchlistState: RequestState.Error,
+          message: failure.message,
+        ));
       },
       (data) {
-        _watchlistState = RequestState.Loaded;
-        _watchlistSeries = data;
-        notifyListeners();
+        emit(state.copyWith(
+          watchlistSeries: data,
+          watchlistState: RequestState.Loaded,
+        ));
       },
     );
   }

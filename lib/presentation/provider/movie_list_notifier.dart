@@ -1,95 +1,129 @@
+import 'package:equatable/equatable.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import 'package:ditonton/common/state_enum.dart';
 import 'package:ditonton/domain/entities/movie.dart';
 import 'package:ditonton/domain/usecases/get_now_playing_movies.dart';
-import 'package:ditonton/common/state_enum.dart';
 import 'package:ditonton/domain/usecases/get_popular_movies.dart';
 import 'package:ditonton/domain/usecases/get_top_rated_movies.dart';
-import 'package:flutter/material.dart';
 
-class MovieListNotifier extends ChangeNotifier {
-  var _nowPlayingMovies = <Movie>[];
-  List<Movie> get nowPlayingMovies => _nowPlayingMovies;
-
-  RequestState _nowPlayingState = RequestState.Empty;
-  RequestState get nowPlayingState => _nowPlayingState;
-
-  var _popularMovies = <Movie>[];
-  List<Movie> get popularMovies => _popularMovies;
-
-  RequestState _popularMoviesState = RequestState.Empty;
-  RequestState get popularMoviesState => _popularMoviesState;
-
-  var _topRatedMovies = <Movie>[];
-  List<Movie> get topRatedMovies => _topRatedMovies;
-
-  RequestState _topRatedMoviesState = RequestState.Empty;
-  RequestState get topRatedMoviesState => _topRatedMoviesState;
-
-  String _message = '';
-  String get message => _message;
-
-  MovieListNotifier({
-    required this.getNowPlayingMovies,
-    required this.getPopularMovies,
-    required this.getTopRatedMovies,
+class MovieListState extends Equatable {
+  final List<Movie> nowPlayingMovies;
+  final RequestState nowPlayingState;
+  final List<Movie> popularMovies;
+  final RequestState popularMoviesState;
+  final List<Movie> topRatedMovies;
+  final RequestState topRatedMoviesState;
+  final String message;
+  MovieListState({
+    this.nowPlayingMovies = const [],
+    this.nowPlayingState = RequestState.Empty,
+    this.popularMovies = const [],
+    this.popularMoviesState = RequestState.Empty,
+    this.topRatedMovies = const [],
+    this.topRatedMoviesState = RequestState.Empty,
+    this.message = "",
   });
 
+  MovieListState copyWith({
+    List<Movie>? nowPlayingMovies,
+    RequestState? nowPlayingState,
+    List<Movie>? popularMovies,
+    RequestState? popularMoviesState,
+    List<Movie>? topRatedMovies,
+    RequestState? topRatedMoviesState,
+    String? message,
+  }) {
+    return MovieListState(
+      nowPlayingMovies: nowPlayingMovies ?? this.nowPlayingMovies,
+      nowPlayingState: nowPlayingState ?? this.nowPlayingState,
+      popularMovies: popularMovies ?? this.popularMovies,
+      popularMoviesState: popularMoviesState ?? this.popularMoviesState,
+      topRatedMovies: topRatedMovies ?? this.topRatedMovies,
+      topRatedMoviesState: topRatedMoviesState ?? this.topRatedMoviesState,
+      message: message ?? this.message,
+    );
+  }
+
+  @override
+  List<Object> get props {
+    return [
+      nowPlayingMovies,
+      nowPlayingState,
+      popularMovies,
+      popularMoviesState,
+      topRatedMovies,
+      topRatedMoviesState,
+      message,
+    ];
+  }
+}
+
+class MovieListCubit extends Cubit<MovieListState> {
   final GetNowPlayingMovies getNowPlayingMovies;
   final GetPopularMovies getPopularMovies;
   final GetTopRatedMovies getTopRatedMovies;
 
-  Future<void> fetchNowPlayingMovies() async {
-    _nowPlayingState = RequestState.Loading;
-    notifyListeners();
+  MovieListCubit({
+    required this.getNowPlayingMovies,
+    required this.getPopularMovies,
+    required this.getTopRatedMovies,
+  }) : super(MovieListState());
 
+  fetchNowPlayingMovies() async {
+    emit(state.copyWith(nowPlayingState: RequestState.Loading));
     final result = await getNowPlayingMovies.execute();
     result.fold(
       (failure) {
-        _nowPlayingState = RequestState.Error;
-        _message = failure.message;
-        notifyListeners();
+        emit(state.copyWith(
+          nowPlayingState: RequestState.Error,
+          message: failure.message,
+        ));
       },
       (moviesData) {
-        _nowPlayingState = RequestState.Loaded;
-        _nowPlayingMovies = moviesData;
-        notifyListeners();
+        emit(state.copyWith(
+            nowPlayingMovies: moviesData,
+            nowPlayingState: RequestState.Loaded));
       },
     );
   }
 
-  Future<void> fetchPopularMovies() async {
-    _popularMoviesState = RequestState.Loading;
-    notifyListeners();
+  fetchPopularMovies() async {
+    emit(state.copyWith(popularMoviesState: RequestState.Loading));
 
     final result = await getPopularMovies.execute();
     result.fold(
       (failure) {
-        _popularMoviesState = RequestState.Error;
-        _message = failure.message;
-        notifyListeners();
+        emit(state.copyWith(
+          message: failure.message,
+          popularMoviesState: RequestState.Error,
+        ));
       },
       (moviesData) {
-        _popularMoviesState = RequestState.Loaded;
-        _popularMovies = moviesData;
-        notifyListeners();
+        emit(state.copyWith(
+          popularMovies: moviesData,
+          popularMoviesState: RequestState.Loaded,
+        ));
       },
     );
   }
 
   Future<void> fetchTopRatedMovies() async {
-    _topRatedMoviesState = RequestState.Loading;
-    notifyListeners();
+    emit(state.copyWith(topRatedMoviesState: RequestState.Loading));
 
     final result = await getTopRatedMovies.execute();
     result.fold(
       (failure) {
-        _topRatedMoviesState = RequestState.Error;
-        _message = failure.message;
-        notifyListeners();
+        emit(state.copyWith(
+          topRatedMoviesState: RequestState.Error,
+          message: failure.message,
+        ));
       },
       (moviesData) {
-        _topRatedMoviesState = RequestState.Loaded;
-        _topRatedMovies = moviesData;
-        notifyListeners();
+        emit(state.copyWith(
+          topRatedMoviesState: RequestState.Loaded,
+          topRatedMovies: moviesData,
+        ));
       },
     );
   }

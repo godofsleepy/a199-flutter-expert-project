@@ -1,40 +1,60 @@
-import 'package:flutter/material.dart';
+import 'package:equatable/equatable.dart';
+
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:ditonton/common/state_enum.dart';
 import 'package:ditonton/domain/entities/tv_series.dart';
 import 'package:ditonton/domain/usecases/get_populer_tvseries.dart';
 
-class PopularSeriesNotifier extends ChangeNotifier {
+class PopulerSeriesState extends Equatable {
+  final RequestState state;
+  final List<TvSeries> data;
+  final String message;
+  PopulerSeriesState({
+    this.state = RequestState.Error,
+    this.data = const [],
+    this.message = "",
+  });
+
+  @override
+  List<Object> get props => [state, data, message];
+
+  PopulerSeriesState copyWith({
+    RequestState? state,
+    List<TvSeries>? data,
+    String? message,
+  }) {
+    return PopulerSeriesState(
+      state: state ?? this.state,
+      data: data ?? this.data,
+      message: message ?? this.message,
+    );
+  }
+}
+
+class PopulerSeriesCubit extends Cubit<PopulerSeriesState> {
   final GetPopulerTvSeries getPopularSeries;
 
-  RequestState _state = RequestState.Empty;
-  RequestState get state => _state;
-
-  List<TvSeries> _data = [];
-  List<TvSeries> get data => _data;
-
-  String _message = '';
-  PopularSeriesNotifier({
+  PopulerSeriesCubit({
     required this.getPopularSeries,
-  });
-  String get message => _message;
+  }) : super(PopulerSeriesState());
 
   Future<void> fetchPopularSeries() async {
-    _state = RequestState.Loading;
-    notifyListeners();
-
+    emit(state.copyWith(state: RequestState.Loading));
     final result = await getPopularSeries.execute();
 
     result.fold(
       (failure) {
-        _message = failure.message;
-        _state = RequestState.Error;
-        notifyListeners();
+        emit(state.copyWith(
+          message: failure.message,
+          state: RequestState.Error,
+        ));
       },
       (data) {
-        _data = data;
-        _state = RequestState.Loaded;
-        notifyListeners();
+        emit(state.copyWith(
+          data: data,
+          state: RequestState.Loaded,
+        ));
       },
     );
   }

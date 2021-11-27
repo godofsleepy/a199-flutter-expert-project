@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:ditonton/common/constants.dart';
 import 'package:ditonton/common/utils.dart';
 import 'package:ditonton/presentation/pages/about_page.dart';
@@ -27,60 +29,50 @@ import 'package:ditonton/presentation/provider/top_rated_movies_notifier.dart';
 import 'package:ditonton/presentation/provider/top_rated_series_notifier.dart';
 import 'package:ditonton/presentation/provider/watchlist_movie_notifier.dart';
 import 'package:ditonton/presentation/provider/watchlist_series_notifier.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_analytics/observer.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
 import 'package:ditonton/injection.dart' as di;
 
-void main() {
-  di.init();
-  runApp(MyApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  // Initialize Firebase.
+  await Firebase.initializeApp();
+
+  await di.init();
+  runZonedGuarded<Future<void>>(() async {
+    runApp(MyApp());
+    // The following lines are the same as previously explained in "Handling uncaught errors"
+    FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
+  }, (error, stack) => FirebaseCrashlytics.instance.recordError(error, stack));
+  // runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  final FirebaseAnalytics analytics = FirebaseAnalytics();
+
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
+    return MultiBlocProvider(
       providers: [
-        ChangeNotifierProvider(
-          create: (_) => di.locator<MovieListNotifier>(),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => di.locator<SeriesListNotifier>(),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => di.locator<MovieDetailNotifier>(),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => di.locator<MovieSearchNotifier>(),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => di.locator<TopRatedMoviesNotifier>(),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => di.locator<PopularMoviesNotifier>(),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => di.locator<WatchlistMovieNotifier>(),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => di.locator<WatchlistSeriesNotifier>(),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => di.locator<PopularSeriesNotifier>(),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => di.locator<TopRatedSeriesNotifier>(),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => di.locator<SeriesSearchNotifier>(),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => di.locator<SeriesDetailNotifier>(),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => di.locator<NowPlayingSeriesNotifier>(),
-        ),
+        BlocProvider(create: (context) => di.locator<MovieDetailCubit>()),
+        BlocProvider(create: (context) => di.locator<MovieListCubit>()),
+        BlocProvider(create: (context) => di.locator<MovieSearchCubit>()),
+        BlocProvider(create: (context) => di.locator<SeriesListCubit>()),
+        BlocProvider(create: (context) => di.locator<TopRatedMovieCubit>()),
+        BlocProvider(create: (context) => di.locator<PopulerMoviesCubit>()),
+        BlocProvider(create: (context) => di.locator<WatchListMovieCubit>()),
+        BlocProvider(create: (context) => di.locator<WatchListSeriesCubit>()),
+        BlocProvider(create: (context) => di.locator<PopulerSeriesCubit>()),
+        BlocProvider(create: (context) => di.locator<TopRatedSeriesCubit>()),
+        BlocProvider(create: (context) => di.locator<SeriesSearchCubit>()),
+        BlocProvider(create: (context) => di.locator<SeriesDetailCubit>()),
+        BlocProvider(create: (context) => di.locator<NowPlayingSeriesCubit>()),
       ],
       child: MaterialApp(
         title: 'Flutter Demo',
@@ -91,7 +83,10 @@ class MyApp extends StatelessWidget {
           colorScheme: kColorScheme.copyWith(secondary: kMikadoYellow),
         ),
         home: HomeMoviePage(),
-        navigatorObservers: [routeObserver],
+        navigatorObservers: [
+          routeObserver,
+          FirebaseAnalyticsObserver(analytics: analytics),
+        ],
         onGenerateRoute: (RouteSettings settings) {
           switch (settings.name) {
             case '/home':

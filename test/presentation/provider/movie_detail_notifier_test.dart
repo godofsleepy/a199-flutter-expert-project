@@ -23,30 +23,26 @@ import 'movie_detail_notifier_test.mocks.dart';
   RemoveWatchlist,
 ])
 void main() {
-  late MovieDetailNotifier provider;
+  late MovieDetailCubit provider;
   late MockGetMovieDetail mockGetMovieDetail;
   late MockGetMovieRecommendations mockGetMovieRecommendations;
   late MockGetWatchListStatus mockGetWatchlistStatus;
   late MockSaveWatchlist mockSaveWatchlist;
   late MockRemoveWatchlist mockRemoveWatchlist;
-  late int listenerCallCount;
 
   setUp(() {
-    listenerCallCount = 0;
     mockGetMovieDetail = MockGetMovieDetail();
     mockGetMovieRecommendations = MockGetMovieRecommendations();
     mockGetWatchlistStatus = MockGetWatchListStatus();
     mockSaveWatchlist = MockSaveWatchlist();
     mockRemoveWatchlist = MockRemoveWatchlist();
-    provider = MovieDetailNotifier(
+    provider = MovieDetailCubit(
       getMovieDetail: mockGetMovieDetail,
       getMovieRecommendations: mockGetMovieRecommendations,
       getWatchListStatus: mockGetWatchlistStatus,
       saveWatchlist: mockSaveWatchlist,
       removeWatchlist: mockRemoveWatchlist,
-    )..addListener(() {
-        listenerCallCount += 1;
-      });
+    );
   });
 
   final tId = 1;
@@ -92,8 +88,7 @@ void main() {
       // act
       provider.fetchMovieDetail(tId);
       // assert
-      expect(provider.movieState, RequestState.Loading);
-      expect(listenerCallCount, 1);
+      expect(provider.state.movieState, RequestState.Loading);
     });
 
     test('should change movie when data is gotten successfully', () async {
@@ -102,9 +97,8 @@ void main() {
       // act
       await provider.fetchMovieDetail(tId);
       // assert
-      expect(provider.movieState, RequestState.Loaded);
-      expect(provider.movie, testMovieDetail);
-      expect(listenerCallCount, 3);
+      expect(provider.state.movieState, RequestState.Loaded);
+      expect(provider.state.movie, testMovieDetail);
     });
 
     test('should change recommendation movies when data is gotten successfully',
@@ -114,8 +108,8 @@ void main() {
       // act
       await provider.fetchMovieDetail(tId);
       // assert
-      expect(provider.movieState, RequestState.Loaded);
-      expect(provider.movieRecommendations, tMovies);
+      expect(provider.state.movieState, RequestState.Loaded);
+      expect(provider.state.movieRecommendations, tMovies);
     });
   });
 
@@ -127,7 +121,7 @@ void main() {
       await provider.fetchMovieDetail(tId);
       // assert
       verify(mockGetMovieRecommendations.execute(tId));
-      expect(provider.movieRecommendations, tMovies);
+      expect(provider.state.movieRecommendations, tMovies);
     });
 
     test('should update recommendation state when data is gotten successfully',
@@ -137,8 +131,8 @@ void main() {
       // act
       await provider.fetchMovieDetail(tId);
       // assert
-      expect(provider.recommendationState, RequestState.Loaded);
-      expect(provider.movieRecommendations, tMovies);
+      expect(provider.state.recommendationState, RequestState.Loaded);
+      expect(provider.state.movieRecommendations, tMovies);
     });
 
     test('should update error message when request in successful', () async {
@@ -150,8 +144,8 @@ void main() {
       // act
       await provider.fetchMovieDetail(tId);
       // assert
-      expect(provider.recommendationState, RequestState.Error);
-      expect(provider.message, 'Failed');
+      expect(provider.state.recommendationState, RequestState.Error);
+      expect(provider.state.message, 'Failed');
     });
   });
 
@@ -162,7 +156,7 @@ void main() {
       // act
       await provider.loadWatchlistStatus(1);
       // assert
-      expect(provider.isAddedToWatchlist, true);
+      expect(provider.state.isAddedToWatchlist, true);
     });
 
     test('should execute save watchlist when function called', () async {
@@ -199,9 +193,8 @@ void main() {
       await provider.addWatchlist(testMovieDetail);
       // assert
       verify(mockGetWatchlistStatus.execute(testMovieDetail.id));
-      expect(provider.isAddedToWatchlist, true);
-      expect(provider.watchlistMessage, 'Added to Watchlist');
-      expect(listenerCallCount, 1);
+      expect(provider.state.isAddedToWatchlist, true);
+      expect(provider.state.watchlistMessage, 'Added to Watchlist');
     });
 
     test('should update watchlist message when add watchlist failed', () async {
@@ -213,8 +206,7 @@ void main() {
       // act
       await provider.addWatchlist(testMovieDetail);
       // assert
-      expect(provider.watchlistMessage, 'Failed');
-      expect(listenerCallCount, 1);
+      expect(provider.state.watchlistMessage, 'Failed');
     });
   });
 
@@ -228,9 +220,8 @@ void main() {
       // act
       await provider.fetchMovieDetail(tId);
       // assert
-      expect(provider.movieState, RequestState.Error);
-      expect(provider.message, 'Server Failure');
-      expect(listenerCallCount, 2);
+      expect(provider.state.movieState, RequestState.Error);
+      expect(provider.state.message, 'Server Failure');
     });
   });
 }
