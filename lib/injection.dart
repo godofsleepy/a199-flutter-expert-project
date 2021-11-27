@@ -1,3 +1,7 @@
+import 'dart:io';
+
+import 'package:flutter/services.dart';
+
 import 'package:ditonton/data/datasources/db/database_helper.dart';
 import 'package:ditonton/data/datasources/movie_local_data_source.dart';
 import 'package:ditonton/data/datasources/movie_remote_data_source.dart';
@@ -38,22 +42,22 @@ import 'package:ditonton/presentation/provider/top_rated_movies_notifier.dart';
 import 'package:ditonton/presentation/provider/top_rated_series_notifier.dart';
 import 'package:ditonton/presentation/provider/watchlist_movie_notifier.dart';
 import 'package:ditonton/presentation/provider/watchlist_series_notifier.dart';
-import 'package:http/http.dart' as http;
 import 'package:get_it/get_it.dart';
+import 'package:http/io_client.dart';
 
 final locator = GetIt.instance;
 
-void init() {
+Future<void> init() async {
   // provider
   locator.registerFactory(
-    () => MovieListNotifier(
+    () => MovieListCubit(
       getNowPlayingMovies: locator(),
       getPopularMovies: locator(),
       getTopRatedMovies: locator(),
     ),
   );
   locator.registerFactory(
-    () => MovieDetailNotifier(
+    () => MovieDetailCubit(
       getMovieDetail: locator(),
       getMovieRecommendations: locator(),
       getWatchListStatus: locator(),
@@ -62,43 +66,43 @@ void init() {
     ),
   );
   locator.registerFactory(
-    () => SeriesListNotifier(
+    () => SeriesListCubit(
         getNowPlayingSeries: locator(),
         getPopulerTvSeries: locator(),
         getTopRatedMovies: locator()),
   );
   locator.registerFactory(
-    () => MovieSearchNotifier(
+    () => MovieSearchCubit(
       searchMovies: locator(),
     ),
   );
   locator.registerFactory(
-    () => PopularMoviesNotifier(
-      locator(),
+    () => PopulerMoviesCubit(
+      getPopularMovies: locator(),
     ),
   );
   locator.registerFactory(
-    () => TopRatedMoviesNotifier(
+    () => TopRatedMovieCubit(
       getTopRatedMovies: locator(),
     ),
   );
   locator.registerFactory(
-    () => WatchlistMovieNotifier(
+    () => WatchListMovieCubit(
       getWatchlistMovies: locator(),
     ),
   );
   locator.registerFactory(
-    () => WatchlistSeriesNotifier(
+    () => WatchListSeriesCubit(
       getWatchlistTvSeries: locator(),
     ),
   );
   locator.registerFactory(
-    () => TopRatedSeriesNotifier(
+    () => TopRatedSeriesCubit(
       getTopRatedSeries: locator(),
     ),
   );
   locator.registerFactory(
-    () => SeriesDetailNotifier(
+    () => SeriesDetailCubit(
       getSeriesDetail: locator(),
       getSeriesRecommendations: locator(),
       getWatchListStatus: locator(),
@@ -107,17 +111,17 @@ void init() {
     ),
   );
   locator.registerFactory(
-    () => SeriesSearchNotifier(
+    () => SeriesSearchCubit(
       searchTvSeries: locator(),
     ),
   );
   locator.registerFactory(
-    () => PopularSeriesNotifier(
+    () => PopulerSeriesCubit(
       getPopularSeries: locator(),
     ),
   );
   locator.registerFactory(
-    () => NowPlayingSeriesNotifier(
+    () => NowPlayingSeriesCubit(
       getNowPlaying: locator(),
     ),
   );
@@ -168,5 +172,12 @@ void init() {
   locator.registerLazySingleton<DatabaseHelper>(() => DatabaseHelper());
 
   // external
-  locator.registerLazySingleton(() => http.Client());
+  final sslCert = await rootBundle.load('certificate/themoviedb-org.pem');
+  SecurityContext securityContext = SecurityContext(withTrustedRoots: false);
+  securityContext.setTrustedCertificatesBytes(sslCert.buffer.asInt8List());
+  HttpClient client = HttpClient(context: securityContext);
+  client.badCertificateCallback =
+      (X509Certificate cert, String host, int port) => false;
+  IOClient ioClient = IOClient(client);
+  locator.registerLazySingleton(() => ioClient);
 }

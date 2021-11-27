@@ -3,6 +3,7 @@ import 'package:ditonton/presentation/provider/now_playing_series_notifier.dart'
 
 import 'package:ditonton/presentation/widgets/series_card_list.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
 
 class NowPlayingSeriesPage extends StatefulWidget {
@@ -16,9 +17,8 @@ class _NowPlayingSeriesPageState extends State<NowPlayingSeriesPage> {
   @override
   void initState() {
     super.initState();
-    Future.microtask(() =>
-        Provider.of<NowPlayingSeriesNotifier>(context, listen: false)
-            .fetchNowPlaying());
+    Future.microtask(
+        () => context.read<NowPlayingSeriesCubit>().fetchNowPlaying());
   }
 
   @override
@@ -29,8 +29,8 @@ class _NowPlayingSeriesPageState extends State<NowPlayingSeriesPage> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
-        child: Consumer<NowPlayingSeriesNotifier>(
-          builder: (context, data, child) {
+        child: BlocBuilder<NowPlayingSeriesCubit, NowPlayingSeriesState>(
+          builder: (context, data) {
             if (data.state == RequestState.Loading) {
               return Center(
                 child: CircularProgressIndicator(),

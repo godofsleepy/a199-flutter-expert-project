@@ -13,16 +13,11 @@ import 'top_rated_movies_notifier_test.mocks.dart';
 @GenerateMocks([GetTopRatedMovies])
 void main() {
   late MockGetTopRatedMovies mockGetTopRatedMovies;
-  late TopRatedMoviesNotifier notifier;
-  late int listenerCallCount;
+  late TopRatedMovieCubit notifier;
 
   setUp(() {
-    listenerCallCount = 0;
     mockGetTopRatedMovies = MockGetTopRatedMovies();
-    notifier = TopRatedMoviesNotifier(getTopRatedMovies: mockGetTopRatedMovies)
-      ..addListener(() {
-        listenerCallCount++;
-      });
+    notifier = TopRatedMovieCubit(getTopRatedMovies: mockGetTopRatedMovies);
   });
 
   final tMovie = Movie(
@@ -50,8 +45,7 @@ void main() {
     // act
     notifier.fetchTopRatedMovies();
     // assert
-    expect(notifier.state, RequestState.Loading);
-    expect(listenerCallCount, 1);
+    expect(notifier.state.state, RequestState.Loading);
   });
 
   test('should change movies data when data is gotten successfully', () async {
@@ -61,9 +55,8 @@ void main() {
     // act
     await notifier.fetchTopRatedMovies();
     // assert
-    expect(notifier.state, RequestState.Loaded);
-    expect(notifier.movies, tMovieList);
-    expect(listenerCallCount, 2);
+    expect(notifier.state.state, RequestState.Loaded);
+    expect(notifier.state.movies, tMovieList);
   });
 
   test('should return error when data is unsuccessful', () async {
@@ -73,8 +66,7 @@ void main() {
     // act
     await notifier.fetchTopRatedMovies();
     // assert
-    expect(notifier.state, RequestState.Error);
-    expect(notifier.message, 'Server Failure');
-    expect(listenerCallCount, 2);
+    expect(notifier.state.state, RequestState.Error);
+    expect(notifier.state.message, 'Server Failure');
   });
 }

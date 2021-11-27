@@ -1,37 +1,59 @@
+import 'package:equatable/equatable.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
 import 'package:ditonton/common/state_enum.dart';
 import 'package:ditonton/domain/entities/movie.dart';
 import 'package:ditonton/domain/usecases/get_watchlist_movies.dart';
-import 'package:flutter/foundation.dart';
 
-class WatchlistMovieNotifier extends ChangeNotifier {
-  var _watchlistMovies = <Movie>[];
-  List<Movie> get watchlistMovies => _watchlistMovies;
+class WatchlistMovieState extends Equatable {
+  final List<Movie> watchlistMovies;
+  final RequestState watchlistState;
+  final String message;
 
-  var _watchlistState = RequestState.Empty;
-  RequestState get watchlistState => _watchlistState;
+  WatchlistMovieState({
+    this.watchlistMovies = const [],
+    this.watchlistState = RequestState.Empty,
+    this.message = "",
+  });
 
-  String _message = '';
-  String get message => _message;
+  WatchlistMovieState copyWith({
+    List<Movie>? watchlistMovies,
+    RequestState? watchlistState,
+    String? message,
+  }) {
+    return WatchlistMovieState(
+      watchlistMovies: watchlistMovies ?? this.watchlistMovies,
+      watchlistState: watchlistState ?? this.watchlistState,
+      message: message ?? this.message,
+    );
+  }
 
-  WatchlistMovieNotifier({required this.getWatchlistMovies});
+  @override
+  List<Object> get props => [watchlistMovies, watchlistState, message];
+}
 
+class WatchListMovieCubit extends Cubit<WatchlistMovieState> {
   final GetWatchlistMovies getWatchlistMovies;
+  WatchListMovieCubit({
+    required this.getWatchlistMovies,
+  }) : super(WatchlistMovieState());
 
-  Future<void> fetchWatchlistMovies() async {
-    _watchlistState = RequestState.Loading;
-    notifyListeners();
+  fetchWatchlistMovies() async {
+    emit(state.copyWith(watchlistState: RequestState.Loading));
 
     final result = await getWatchlistMovies.execute();
     result.fold(
       (failure) {
-        _watchlistState = RequestState.Error;
-        _message = failure.message;
-        notifyListeners();
+        emit(state.copyWith(
+          watchlistState: RequestState.Error,
+          message: failure.message,
+        ));
       },
       (moviesData) {
-        _watchlistState = RequestState.Loaded;
-        _watchlistMovies = moviesData;
-        notifyListeners();
+        emit(state.copyWith(
+          watchlistState: RequestState.Loaded,
+          watchlistMovies: moviesData,
+        ));
       },
     );
   }

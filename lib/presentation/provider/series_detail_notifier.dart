@@ -1,3 +1,6 @@
+import 'package:equatable/equatable.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
 import 'package:ditonton/common/state_enum.dart';
 import 'package:ditonton/domain/entities/tv_series.dart';
 import 'package:ditonton/domain/entities/tv_series_detail.dart';
@@ -6,111 +9,152 @@ import 'package:ditonton/domain/usecases/get_tvseries_recommendations.dart';
 import 'package:ditonton/domain/usecases/get_watchlist_status_tvseries.dart';
 import 'package:ditonton/domain/usecases/remove_watchlist_tvseries.dart';
 import 'package:ditonton/domain/usecases/save_watchlist_tvseries.dart';
-import 'package:flutter/material.dart';
 
-class SeriesDetailNotifier extends ChangeNotifier {
-  static const watchlistAddSuccessMessage = 'Added to Watchlist';
-  static const watchlistRemoveSuccessMessage = 'Removed from Watchlist';
+class SeriesDetailState extends Equatable {
+  final TvSeriesDetail? data;
+  final RequestState dataState;
+  final List<TvSeries> seriesRecommendations;
+  final RequestState recommendationState;
+  final String watchlistMessage;
+  final String message;
+  final bool isAddedToWatchlist;
 
+  SeriesDetailState({
+    this.data,
+    this.dataState = RequestState.Empty,
+    this.seriesRecommendations = const [],
+    this.recommendationState = RequestState.Empty,
+    this.watchlistMessage = "",
+    this.message = "",
+    this.isAddedToWatchlist = false,
+  });
+
+  SeriesDetailState copyWith({
+    TvSeriesDetail? data,
+    RequestState? dataState,
+    List<TvSeries>? seriesRecommendations,
+    RequestState? recommendationState,
+    String? watchlistMessage,
+    String? message,
+    bool? isAddedToWatchlist,
+  }) {
+    return SeriesDetailState(
+      data: data ?? this.data,
+      dataState: dataState ?? this.dataState,
+      seriesRecommendations:
+          seriesRecommendations ?? this.seriesRecommendations,
+      recommendationState: recommendationState ?? this.recommendationState,
+      watchlistMessage: watchlistMessage ?? this.watchlistMessage,
+      message: message ?? this.message,
+      isAddedToWatchlist: isAddedToWatchlist ?? this.isAddedToWatchlist,
+    );
+  }
+
+  @override
+  List<Object?> get props {
+    return [
+      data,
+      dataState,
+      seriesRecommendations,
+      recommendationState,
+      watchlistMessage,
+      message,
+      isAddedToWatchlist,
+    ];
+  }
+}
+
+class SeriesDetailCubit extends Cubit<SeriesDetailState> {
   final GetTvSeriesDetail getSeriesDetail;
   final GetTvSeriesRecommendations getSeriesRecommendations;
   final GetWatchListStatusTvSeries getWatchListStatus;
   final SaveWatchlistTvSeries saveWatchlist;
   final RemoveWatchlistTvSeries removeWatchlist;
-
-  SeriesDetailNotifier({
+  SeriesDetailCubit({
     required this.getSeriesDetail,
     required this.getSeriesRecommendations,
     required this.getWatchListStatus,
     required this.saveWatchlist,
     required this.removeWatchlist,
-  });
+  }) : super(SeriesDetailState());
 
-  late TvSeriesDetail _data;
-  TvSeriesDetail get data => _data;
-
-  RequestState _dataState = RequestState.Empty;
-  RequestState get dataState => _dataState;
-
-  List<TvSeries> _dataRecommendations = [];
-  List<TvSeries> get seriesRecommendations => _dataRecommendations;
-
-  RequestState _recommendationState = RequestState.Empty;
-  RequestState get recommendationState => _recommendationState;
-
-  String _message = '';
-  String get message => _message;
-
-  bool _isAddedtoWatchlist = false;
-  bool get isAddedToWatchlist => _isAddedtoWatchlist;
+  static const watchlistAddSuccessMessage = 'Added to Watchlist';
+  static const watchlistRemoveSuccessMessage = 'Removed from Watchlist';
 
   Future<void> fetchSeriesDetail(int id) async {
-    _dataState = RequestState.Loading;
-    notifyListeners();
+    emit(state.copyWith(dataState: RequestState.Loading));
     final detailResult = await getSeriesDetail.execute(id);
     final recommendationResult = await getSeriesRecommendations.execute(id);
     detailResult.fold(
       (failure) {
-        _dataState = RequestState.Error;
-        _message = failure.message;
-        notifyListeners();
+        emit(state.copyWith(
+          message: failure.message,
+          dataState: RequestState.Error,
+        ));
       },
       (data) {
-        _recommendationState = RequestState.Loading;
-        _data = data;
-        notifyListeners();
+        emit(state.copyWith(
+          recommendationState: RequestState.Loading,
+          data: data,
+        ));
         recommendationResult.fold(
           (failure) {
-            _recommendationState = RequestState.Error;
-            _message = failure.message;
+            emit(state.copyWith(
+                message: failure.message,
+                recommendationState: RequestState.Error));
           },
           (series) {
-            _recommendationState = RequestState.Loaded;
-            _dataRecommendations = series;
+            emit(state.copyWith(
+              seriesRecommendations: series,
+              recommendationState: RequestState.Loaded,
+            ));
           },
         );
-        _dataState = RequestState.Loaded;
-        notifyListeners();
+
+        emit(state.copyWith(
+          dataState: RequestState.Loaded,
+        ));
       },
     );
   }
 
-  String _watchlistMessage = '';
-  String get watchlistMessage => _watchlistMessage;
-
-  Future<void> addWatchlist(TvSeriesDetail detail) async {
+  addWatchlist(TvSeriesDetail detail) async {
     final result = await saveWatchlist.execute(detail);
 
     await result.fold(
       (failure) async {
-        _watchlistMessage = failure.message;
+        emit(state.copyWith(
+          watchlistMessage: failure.message,
+        ));
       },
       (successMessage) async {
-        _watchlistMessage = successMessage;
+        emit(state.copyWith(watchlistMessage: successMessage));
       },
     );
 
     await loadWatchlistStatus(detail.id);
   }
 
-  Future<void> removeFromWatchlist(TvSeriesDetail detail) async {
+  removeFromWatchlist(TvSeriesDetail detail) async {
     final result = await removeWatchlist.execute(detail);
 
     await result.fold(
       (failure) async {
-        _watchlistMessage = failure.message;
+        emit(state.copyWith(
+          watchlistMessage: failure.message,
+        ));
       },
       (successMessage) async {
-        _watchlistMessage = successMessage;
+        emit(state.copyWith(watchlistMessage: successMessage));
       },
     );
 
     await loadWatchlistStatus(detail.id);
   }
 
-  Future<void> loadWatchlistStatus(int id) async {
+  loadWatchlistStatus(int id) async {
     final result = await getWatchListStatus.execute(id);
-    _isAddedtoWatchlist = result;
-    notifyListeners();
+
+    emit(state.copyWith(isAddedToWatchlist: result));
   }
 }

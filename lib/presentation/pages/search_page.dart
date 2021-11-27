@@ -3,6 +3,7 @@ import 'package:ditonton/common/state_enum.dart';
 import 'package:ditonton/presentation/provider/movie_search_notifier.dart';
 import 'package:ditonton/presentation/widgets/movie_card_list.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
 
 class SearchPage extends StatelessWidget {
@@ -21,8 +22,7 @@ class SearchPage extends StatelessWidget {
           children: [
             TextField(
               onSubmitted: (query) {
-                Provider.of<MovieSearchNotifier>(context, listen: false)
-                    .fetchMovieSearch(query);
+                context.read<MovieSearchCubit>().fetchMovieSearch(query);
               },
               decoration: InputDecoration(
                 hintText: 'Search title',
@@ -36,8 +36,8 @@ class SearchPage extends StatelessWidget {
               'Search Result',
               style: kHeading6,
             ),
-            Consumer<MovieSearchNotifier>(
-              builder: (context, data, child) {
+            BlocBuilder<MovieSearchCubit, MovieSearchState>(
+              builder: (context, data) {
                 if (data.state == RequestState.Loading) {
                   return Center(
                     child: CircularProgressIndicator(),

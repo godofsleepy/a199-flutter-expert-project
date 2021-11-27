@@ -1,38 +1,56 @@
+import 'package:equatable/equatable.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ditonton/common/state_enum.dart';
 import 'package:ditonton/domain/entities/tv_series.dart';
 import 'package:ditonton/domain/usecases/get_top_rated_tvseries.dart';
-import 'package:flutter/material.dart';
 
-class TopRatedSeriesNotifier extends ChangeNotifier {
+class TopRatedSeriesState extends Equatable {
+  final RequestState state;
+  final List<TvSeries> data;
+  final String message;
+
+  TopRatedSeriesState({
+    this.state = RequestState.Empty,
+    this.data = const [],
+    this.message = "",
+  });
+
+  @override
+  List<Object> get props => [state, data, message];
+
+  TopRatedSeriesState copyWith({
+    RequestState? state,
+    List<TvSeries>? data,
+    String? message,
+  }) {
+    return TopRatedSeriesState(
+      state: state ?? this.state,
+      data: data ?? this.data,
+      message: message ?? this.message,
+    );
+  }
+}
+
+class TopRatedSeriesCubit extends Cubit<TopRatedSeriesState> {
   final GetTopRatedTvSeries getTopRatedSeries;
+  TopRatedSeriesCubit({
+    required this.getTopRatedSeries,
+  }) : super(TopRatedSeriesState());
 
-  TopRatedSeriesNotifier({required this.getTopRatedSeries});
-
-  RequestState _state = RequestState.Empty;
-  RequestState get state => _state;
-
-  List<TvSeries> _data = [];
-  List<TvSeries> get data => _data;
-
-  String _message = '';
-  String get message => _message;
-
-  Future<void> fetchTopRatedSeries() async {
-    _state = RequestState.Loading;
-    notifyListeners();
+  fetchTopRatedSeries() async {
+    emit(state.copyWith(state: RequestState.Loading));
 
     final result = await getTopRatedSeries.execute();
 
     result.fold(
       (failure) {
-        _message = failure.message;
-        _state = RequestState.Error;
-        notifyListeners();
+        emit(state.copyWith(
+          message: failure.message,
+          state: RequestState.Error,
+        ));
       },
       (data) {
-        _data = data;
-        _state = RequestState.Loaded;
-        notifyListeners();
+        emit(state.copyWith(data: data, state: RequestState.Loaded));
       },
     );
   }

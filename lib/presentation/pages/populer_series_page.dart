@@ -2,6 +2,7 @@ import 'package:ditonton/common/state_enum.dart';
 import 'package:ditonton/presentation/provider/populer_series_notifier.dart';
 import 'package:ditonton/presentation/widgets/series_card_list.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
 
 class PopularSeriesPage extends StatefulWidget {
@@ -15,9 +16,9 @@ class _PopularSeriesPageState extends State<PopularSeriesPage> {
   @override
   void initState() {
     super.initState();
-    Future.microtask(() =>
-        Provider.of<PopularSeriesNotifier>(context, listen: false)
-            .fetchPopularSeries());
+    Future.microtask(
+      () => context.read<PopulerSeriesCubit>().fetchPopularSeries(),
+    );
   }
 
   @override
@@ -28,8 +29,8 @@ class _PopularSeriesPageState extends State<PopularSeriesPage> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
-        child: Consumer<PopularSeriesNotifier>(
-          builder: (context, data, child) {
+        child: BlocBuilder<PopulerSeriesCubit, PopulerSeriesState>(
+          builder: (context, data) {
             if (data.state == RequestState.Loading) {
               return Center(
                 child: CircularProgressIndicator(),

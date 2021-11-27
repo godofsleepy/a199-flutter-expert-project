@@ -3,6 +3,7 @@ import 'package:ditonton/common/utils.dart';
 import 'package:ditonton/presentation/provider/watchlist_series_notifier.dart';
 import 'package:ditonton/presentation/widgets/series_card_list.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
 
 class WatchlistSeriesPage extends StatefulWidget {
@@ -17,9 +18,8 @@ class _WatchlistSeriesPageState extends State<WatchlistSeriesPage>
   @override
   void initState() {
     super.initState();
-    Future.microtask(() =>
-        Provider.of<WatchlistSeriesNotifier>(context, listen: false)
-            .fetchWatchlistSeries());
+    Future.microtask(
+        () => context.read<WatchListSeriesCubit>().fetchWatchlistSeries());
   }
 
   @override
@@ -29,8 +29,7 @@ class _WatchlistSeriesPageState extends State<WatchlistSeriesPage>
   }
 
   void didPopNext() {
-    Provider.of<WatchlistSeriesNotifier>(context, listen: false)
-        .fetchWatchlistSeries();
+    context.read<WatchListSeriesCubit>().fetchWatchlistSeries();
   }
 
   @override
@@ -41,8 +40,8 @@ class _WatchlistSeriesPageState extends State<WatchlistSeriesPage>
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
-        child: Consumer<WatchlistSeriesNotifier>(
-          builder: (context, data, child) {
+        child: BlocBuilder<WatchListSeriesCubit, WatchlistSeriesState>(
+          builder: (context, data) {
             if (data.watchlistState == RequestState.Loading) {
               return Center(
                 child: CircularProgressIndicator(),
