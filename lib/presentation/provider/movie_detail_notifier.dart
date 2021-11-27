@@ -111,37 +111,41 @@ class MovieDetailCubit extends Cubit<MovieDetailState> {
     );
   }
 
-  addWatchlist(MovieDetail movie) async {
+  Future<void> addWatchlist(MovieDetail movie) async {
     final result = await saveWatchlist.execute(movie);
 
     await result.fold(
       (failure) async {
-        emit(state.copyWith(watchlistMessage: failure.message));
+        final result = await getWatchListStatus.execute(movie.id);
+        emit(state.copyWith(
+            watchlistMessage: failure.message, isAddedToWatchlist: result));
       },
       (successMessage) async {
-        emit(state.copyWith(watchlistMessage: successMessage));
+        final result = await getWatchListStatus.execute(movie.id);
+        emit(state.copyWith(
+            watchlistMessage: successMessage, isAddedToWatchlist: result));
       },
     );
-
-    await loadWatchlistStatus(movie.id);
   }
 
-  removeFromWatchlist(MovieDetail movie) async {
+  Future<void> removeFromWatchlist(MovieDetail movie) async {
     final result = await removeWatchlist.execute(movie);
 
     await result.fold(
       (failure) async {
-        emit(state.copyWith(watchlistMessage: failure.message));
+        final result = await getWatchListStatus.execute(movie.id);
+        emit(state.copyWith(
+            watchlistMessage: failure.message, isAddedToWatchlist: result));
       },
       (successMessage) async {
-        emit(state.copyWith(watchlistMessage: successMessage));
+        final result = await getWatchListStatus.execute(movie.id);
+        emit(state.copyWith(
+            watchlistMessage: successMessage, isAddedToWatchlist: result));
       },
     );
-
-    await loadWatchlistStatus(movie.id);
   }
 
-  loadWatchlistStatus(int id) async {
+  Future<void> loadWatchlistStatus(int id) async {
     final result = await getWatchListStatus.execute(id);
     emit(state.copyWith(isAddedToWatchlist: result));
   }

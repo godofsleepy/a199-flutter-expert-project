@@ -38,7 +38,7 @@ class TopRatedMovieCubit extends Cubit<TopRatedMovieState> {
     required this.getTopRatedMovies,
   }) : super(TopRatedMovieState());
 
-  fetchTopRatedMovies() async {
+  Future<void> fetchTopRatedMovies() async {
     emit(state.copyWith(state: RequestState.Loading));
 
     final result = await getTopRatedMovies.execute();
