@@ -90,7 +90,7 @@ void main() {
       recommendationState: RequestState.Loaded,
       movieRecommendations: [],
       isAddedToWatchlist: false,
-      watchlistMessage: "Added to Watchlist",
+      watchlistMessage: "",
     ));
 
     when(mockNotifier.stream).thenAnswer((_) => Stream.value(MovieDetailState(
@@ -111,8 +111,8 @@ void main() {
     await tester.tap(watchlistButton);
     await tester.pump();
 
-    expect(find.byType(SnackBar), findsOneWidget);
-    expect(find.text('Added to Watchlist'), findsOneWidget);
+    expectLater(find.byType(SnackBar), findsOneWidget);
+    expectLater(find.text('Added to Watchlist'), findsOneWidget);
   });
 
   testWidgets(
@@ -124,7 +124,7 @@ void main() {
       recommendationState: RequestState.Loaded,
       movieRecommendations: [],
       isAddedToWatchlist: false,
-      watchlistMessage: "Failed",
+      watchlistMessage: "",
     ));
 
     when(mockNotifier.stream).thenAnswer((_) => Stream.value(MovieDetailState(
@@ -145,7 +145,7 @@ void main() {
     await tester.tap(watchlistButton);
     await tester.pump();
 
-    expect(find.byType(AlertDialog), findsOneWidget);
-    expect(find.text('Failed'), findsOneWidget);
+    expectLater(find.byType(AlertDialog), findsOneWidget);
+    expectLater(find.text('Failed'), findsOneWidget);
   });
 }
