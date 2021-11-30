@@ -77,7 +77,9 @@ class MyApp extends StatelessWidget {
           primaryColor: kRichBlack,
           scaffoldBackgroundColor: kRichBlack,
           textTheme: kTextTheme,
-          colorScheme: kColorScheme.copyWith(secondary: kMikadoYellow),
+          colorScheme: kColorScheme.copyWith(
+            secondary: kMikadoYellow,
+          ),
         ),
         home: HomeMoviePage(),
         navigatorObservers: [
