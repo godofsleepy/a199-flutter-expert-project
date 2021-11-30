@@ -118,12 +118,16 @@ class MovieDetailCubit extends Cubit<MovieDetailState> {
       (failure) async {
         final result = await getWatchListStatus.execute(movie.id);
         emit(state.copyWith(
-            watchlistMessage: failure.message, isAddedToWatchlist: result));
+          watchlistMessage: failure.message,
+          isAddedToWatchlist: result,
+        ));
       },
       (successMessage) async {
         final result = await getWatchListStatus.execute(movie.id);
         emit(state.copyWith(
-            watchlistMessage: successMessage, isAddedToWatchlist: result));
+          watchlistMessage: watchlistAddSuccessMessage,
+          isAddedToWatchlist: result,
+        ));
       },
     );
   }
@@ -140,7 +144,8 @@ class MovieDetailCubit extends Cubit<MovieDetailState> {
       (successMessage) async {
         final result = await getWatchListStatus.execute(movie.id);
         emit(state.copyWith(
-            watchlistMessage: successMessage, isAddedToWatchlist: result));
+            watchlistMessage: watchlistRemoveSuccessMessage,
+            isAddedToWatchlist: result));
       },
     );
   }

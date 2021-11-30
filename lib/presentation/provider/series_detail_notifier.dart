@@ -128,7 +128,9 @@ class SeriesDetailCubit extends Cubit<SeriesDetailState> {
         ));
       },
       (successMessage) async {
-        emit(state.copyWith(watchlistMessage: successMessage));
+        emit(state.copyWith(
+          watchlistMessage: watchlistAddSuccessMessage,
+        ));
       },
     );
 
@@ -145,7 +147,7 @@ class SeriesDetailCubit extends Cubit<SeriesDetailState> {
         ));
       },
       (successMessage) async {
-        emit(state.copyWith(watchlistMessage: successMessage));
+        emit(state.copyWith(watchlistMessage: watchlistRemoveSuccessMessage));
       },
     );
 

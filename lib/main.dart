@@ -50,7 +50,6 @@ void main() async {
     // The following lines are the same as previously explained in "Handling uncaught errors"
     FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
   }, (error, stack) => FirebaseCrashlytics.instance.recordError(error, stack));
-  // runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -60,7 +59,6 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider(create: (context) => di.locator<MovieDetailCubit>()),
         BlocProvider(create: (context) => di.locator<MovieListCubit>()),
         BlocProvider(create: (context) => di.locator<MovieSearchCubit>()),
         BlocProvider(create: (context) => di.locator<SeriesListCubit>()),
@@ -71,7 +69,6 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (context) => di.locator<PopulerSeriesCubit>()),
         BlocProvider(create: (context) => di.locator<TopRatedSeriesCubit>()),
         BlocProvider(create: (context) => di.locator<SeriesSearchCubit>()),
-        BlocProvider(create: (context) => di.locator<SeriesDetailCubit>()),
         BlocProvider(create: (context) => di.locator<NowPlayingSeriesCubit>()),
       ],
       child: MaterialApp(
@@ -103,13 +100,17 @@ class MyApp extends StatelessWidget {
             case MovieDetailPage.ROUTE_NAME:
               final id = settings.arguments as int;
               return MaterialPageRoute(
-                builder: (_) => MovieDetailPage(id: id),
+                builder: (_) => BlocProvider(
+                    create: (context) => di.locator<MovieDetailCubit>(),
+                    child: MovieDetailPage(id: id)),
                 settings: settings,
               );
             case SeriesDetailPage.ROUTE_NAME:
               final id = settings.arguments as int;
               return MaterialPageRoute(
-                builder: (_) => SeriesDetailPage(id: id),
+                builder: (_) => BlocProvider(
+                    create: (context) => di.locator<SeriesDetailCubit>(),
+                    child: SeriesDetailPage(id: id)),
                 settings: settings,
               );
             case SearchPage.ROUTE_NAME:
