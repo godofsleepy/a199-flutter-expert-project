@@ -40,6 +40,42 @@
           ]
         }
       }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:204499538477:android:eb24c637087cb78bb85ea4",
+        "android_client_info": {
+          "package_name": "com.godofsleepy.ditonton"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "204499538477-ikvelldr4532h6pksqfohk4t3snlhjhh.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD7f7T-n2XnRLbGctc5sGszLonn0XI9bhM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "204499538477-ikvelldr4532h6pksqfohk4t3snlhjhh.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "204499538477-ol63ovv0q7htonb779vfpdpjtvutfm1a.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.dicoding.ditonton"
+              }
+            }
+          ]
+        }
+      }
     }
   ],
   "configuration_version": "1"

@@ -1,4 +1,4 @@
-package com.dicoding.ditonton
+package com.godofsleepy.ditonton
 
 import io.flutter.embedding.android.FlutterActivity
 
