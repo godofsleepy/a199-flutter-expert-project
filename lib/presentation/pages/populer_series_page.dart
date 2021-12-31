@@ -3,7 +3,6 @@ import 'package:ditonton/presentation/provider/populer_series_notifier.dart';
 import 'package:ditonton/presentation/widgets/series_card_list.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:provider/provider.dart';
 
 class PopularSeriesPage extends StatefulWidget {
   static const ROUTE_NAME = '/popular-series';

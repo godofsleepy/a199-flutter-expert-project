@@ -11,7 +11,6 @@ import 'package:ditonton/presentation/provider/series_list_notifier.dart';
 import 'package:ditonton/presentation/widgets/subheading.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:provider/provider.dart';
 
 class HomeSeriesPage extends StatefulWidget {
   static const ROUTE_NAME = '/home-series';
